@@ -116,7 +116,7 @@ class MainMotri extends StatelessWidget {
 
 
       appBar: AppBar(
-        title: Text(SetLocalization.of(context).getTranslateValue("App_Name")),
+        title: Text('Motri'),
         backgroundColor: Color(0xfff7892b),
       ),
       drawer: Drawer(

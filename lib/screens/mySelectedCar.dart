@@ -1,4 +1,5 @@
 import 'package:Motri/screens/CarInfo.dart';
+import 'package:Motri/screens/Generate.dart';
 import 'package:Motri/widgets/Auth/addCarForm.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
 import 'package:Motri/widgets/Auth/elCarSelectedInfo.dart';
@@ -32,7 +33,7 @@ class CarSelected extends StatelessWidget {
             icon: Icon(Icons.arrow_back, color: Colors.black, ),
 
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MyCarsInfo()),),
+              MaterialPageRoute(builder: (ctx) => GenerateScreen()),),
 
           ),
           title: Text('Car Info'),
