@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "43412483794",
+    "project_id": "motri-1194d",
+    "storage_bucket": "motri-1194d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:43412483794:android:c3e4fb89962a89ba36870b",
+        "android_client_info": {
+          "package_name": "com.example.Motri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "43412483794-o1eigd80mlvdhh92si596avqsdmef17g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3DCv7CvEQlDgHXDXJSafyC-LiiYh1a_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "43412483794-o1eigd80mlvdhh92si596avqsdmef17g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
