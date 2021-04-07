@@ -23,7 +23,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<FormState> _formKePy = new GlobalKey<FormState>();
 
   bool ValidEmail = false;
@@ -93,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       
       ,
-      color: Color(0xfff7892b),
+       color: Color(0xfff7892b),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18.0),
         side: BorderSide(color: Colors.black),
@@ -250,6 +249,7 @@ class _LoginPageState extends State<LoginPage> {
                    onChanged: (String s) {
                     setState(() {
                       UserEmail = s;
+                      print(UserEmail);
 
 
                     });

@@ -1,8 +1,14 @@
+
 import 'package:Motri/localizations/setLocalization.dart';
 import 'package:Motri/route/custom_route.dart';
 import 'package:Motri/route/route_names.dart';
+import 'package:Motri/screens/AddDisability.dart';
 import 'package:Motri/screens/AuthFirebase.dart';
+import 'package:Motri/screens/EditProfile.dart';
+import 'package:Motri/screens/OkChild.dart';
+import 'package:Motri/screens/OkSelf.dart';
 import 'package:Motri/screens/loginPage.dart';
+import 'package:Motri/screens/ok.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Motri/screens/Main.dart';
@@ -12,8 +18,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:io';
-
-
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 String _data;
 
@@ -24,6 +30,9 @@ Future<void> main() async
 // Get a specific camera from the list of available cameras.
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  final fbm = FirebaseMessaging();
+  String getToken = "";
+  fbm.getToken().then((value) => getToken = value);
 
   runApp(MyApp()
   );
@@ -44,6 +53,7 @@ Map<int, Color> color =
   800:Color.fromRGBO(136,14,79, .9),
   900:Color.fromRGBO(136,14,79, 1),
 };
+
 class MyApp extends StatefulWidget {
   BuildContext trfc;
   static void setLocale(BuildContext context, Locale locale)
@@ -57,6 +67,21 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _local;
+  void initState()
+  {
+    final fbm = FirebaseMessaging();
+    String getToken = "";
+
+    fbm.getToken().whenComplete(() {
+      fbm.getToken().then((value) => print(value));
+    });
+
+
+
+
+    super.initState();
+
+  }
   @override
   void setLocale(Locale locale)
   {
@@ -79,7 +104,12 @@ class _MyAppState extends State<MyApp> {
 
               user = FirebaseAuth.instance.currentUser.email;
               print(user);
+
+
+              FocusScope.of(context).requestFocus(FocusNode());
+
               return MainMotri();
+
             }
             return LoginPage();
           }),

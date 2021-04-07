@@ -30,11 +30,11 @@ class RequestCode extends StatelessWidget {
     final List<Features> GridFeatures = [
     Features(
       title: 'For myself',
-      image: 'images/carInfo.png',
+      image: 'images/SelfTrans.png',
     ),
     Features(
     title: 'For my child',
-    image: 'images/payTickets.png',
+    image: 'images/ChildTrans.png',
     ) ];
     void changeLang(Language lang) {
       Locale _temp;
@@ -60,22 +60,25 @@ class RequestCode extends StatelessWidget {
       appBar: AppBar(
         title: Text("Request Code"),
         backgroundColor: Color(0xfff7892b),
+        leading:  IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black, ),
+
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx) => MainMotri()),),
+
+        ),
       ),
 
       body: Container(
-
-
-
-
+        alignment: Alignment.center,
           child:  GridView.builder(
             padding: const EdgeInsets.all(20.0),
 
 
 
 
-            itemCount: GridFeatures.length,
-
-
+            itemCount: 2,
+            shrinkWrap: true,
             itemBuilder: (ctx, i) =>
                 MainFeaturesForm(
                   GridFeatures[i].title,
@@ -84,16 +87,6 @@ class RequestCode extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
 
-
-
-              childAspectRatio: MediaQuery
-                  .of(context)
-                  .size
-                  .width /
-                  (MediaQuery
-                      .of(context)
-                      .size
-                      .height / 1.6),
               crossAxisSpacing: 25,
 
               mainAxisSpacing: 12.5,

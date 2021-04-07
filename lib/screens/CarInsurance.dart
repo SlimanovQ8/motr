@@ -37,7 +37,9 @@ class CarInsurance extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => CarSelected()),),
 
           ),
-          title: Text('Car Insurance'),
+          title: Text('Car Insurance', style: TextStyle(
+            color: Colors.black
+          ),),
 
 
 

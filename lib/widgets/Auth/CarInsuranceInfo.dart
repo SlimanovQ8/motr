@@ -70,18 +70,6 @@ class _MyHomePageState extends State<CarInsuranceInfo> {
   String selectedFc = '';
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: FutureBuilder(
-          future: getUserName(),
-          builder: (_, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text('');
-            }
-            return Text(snapshot.data + '');
-          },
-        ),
-        backgroundColor: Color(0xfff7892b),
-      ),
       body: FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('Cars')
@@ -145,7 +133,7 @@ class _MyHomePageState extends State<CarInsuranceInfo> {
                       child: const Text('Home Page'),
                       onPressed: () {
                         Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => MyApp())
+                            MaterialPageRoute(builder: (ctx) => MainMotri())
                         );
                       },
                     ))

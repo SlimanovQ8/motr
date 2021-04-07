@@ -36,7 +36,9 @@ class CarSelected extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => GenerateScreen()),),
 
           ),
-          title: Text('Car Info'),
+          title: Text('Car Info', style: TextStyle(
+            color: Colors.black,
+          ),),
 
 
 

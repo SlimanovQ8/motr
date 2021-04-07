@@ -1,5 +1,6 @@
 import 'package:Motri/screens/Main.dart';
 import 'package:Motri/screens/addCar.dart';
+import 'package:Motri/screens/loginPage.dart';
 import 'package:Motri/screens/ok.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,42 +27,76 @@ class _MyHomePageState extends State<ChangeMyEmail> {
   final _auth = FirebaseAuth.instance;
   static GlobalObjectKey<ScaffoldState> _formKeym;
 
-  bool checkPlateNum(String PlateNumber) {}
   var _isLoading = false;
   bool isExist = true;
   bool isEqual = true;
   bool reAuthenticate = false;
   bool isMatch = true;
   bool isEmptyNewC = true;
-  bool isLessThan7New = true;
+  bool isGreaterThan7New = true;
+  bool isValid = true;
+  bool isSame = false;
+  bool isRegistered = false;
 
-  void _sumbitAuthForm(String Email, String NewPassword,
-      String NewPasswordConfirmation, BuildContext ctx) async {
+  void _sumbitAuthForm(String Email, String Password,
+        BuildContext ctx) async {
     UserCredential authResult;
 
     try {
       setState(() {
         _isLoading = true;
+        isExist = true;
+        isEqual = true;
+        reAuthenticate = false;
+        isMatch = true;
+        isEmptyNewC = true;
+        isGreaterThan7New = true;
+        isValid = true;
+        isSame = false;
+        isRegistered = false;
       });
 
       final snapShot = await FirebaseFirestore.instance
           .collection('Users')
           .doc(_auth.currentUser.uid)
           .get();
+      final ss = await FirebaseFirestore.instance.collection('Users').get();
+      for (var i = 0; i < ss.docs.length; i++)
+        {
+          if(Email.compareTo(ss.docs[i].get('email')) == 0) {
+            isRegistered = true;
+            break;
+          }
+        }
+      print(ss.docs.length);
+      print(ss.size);
       print(snapShot.id);
       String b = snapShot.get('psssword');
-      print(b);
-      if (Email.contains("@") || !Email.contains(".") || Email.contains(' ')) {
+      if (Email.compareTo(_auth.currentUser.email) == 0)
+        {
+          setState(() {
+            isSame = true;
+          });
+        }
+      else 
+        {
+          setState(() {
+            isSame = false;
+          });
+        }
+      
+      if (!Email.contains("@") || !Email.contains(".") || Email.contains(' ')) {
         //it exists
         setState(() {
-          isExist = true;
+          isValid = false;
+          
         });
       } else {
         //not exists
         setState(() {
-          isExist = false;
+          isValid = true;
         });
-      } if (b.compareTo(NewPassword) == 0) {
+      } if (b.compareTo(Password) == 0) {
         //it exists
         setState(() {
           isMatch = true;
@@ -72,33 +107,23 @@ class _MyHomePageState extends State<ChangeMyEmail> {
           isMatch = false;
         });
       }
-      if (NewPassword.compareTo(NewPasswordConfirmation) == 0) {
+
+      if (Password.length > 7) {
         //it exists
         setState(() {
-          isEqual = true;
+          isGreaterThan7New = true;
         });
       } else {
         //not exists
         setState(() {
-          isEqual = false;
-        });
-      }
-      if (NewPassword.length > 6) {
-        //it exists
-        setState(() {
-          isLessThan7New = true;
-        });
-      } else {
-        //not exists
-        setState(() {
-          isLessThan7New = false;
+          isGreaterThan7New = false;
         });
       }
       final u = _auth.currentUser;
 
       final cred =
-      EmailAuthProvider.credential(email: u.email, password: NewPassword);
-      if (isEqual && isExist && isLessThan7New && isMatch) {
+      EmailAuthProvider.credential(email: u.email, password: Password);
+      if ( isGreaterThan7New && isMatch && isValid && !isSame && !isRegistered) {
         await u.reauthenticateWithCredential(cred);
         reAuthenticate = true;
         if (reAuthenticate) {
@@ -108,6 +133,7 @@ class _MyHomePageState extends State<ChangeMyEmail> {
               .collection('Users')
               .doc(snapShot.id)
               .update({'email': Email.toLowerCase()});
+          FirebaseAuth.instance.signOut();
           showDialog(
               context: context,
               builder: (_) => new AlertDialog(
@@ -119,7 +145,7 @@ class _MyHomePageState extends State<ChangeMyEmail> {
                       Navigator.of(context, rootNavigator: true).pop('dialog');
 
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (ctx) => MyApp())
+                          MaterialPageRoute(builder: (ctx) => LoginPage())
                       );
                       _isLoading = false;
                     },
@@ -135,6 +161,7 @@ class _MyHomePageState extends State<ChangeMyEmail> {
     } catch (err) {
       setState(() {
         _isLoading = false;
+        isExist = false;
       });
       print(err);
     }
@@ -145,8 +172,8 @@ class _MyHomePageState extends State<ChangeMyEmail> {
   }
 
   @override
-  String PasswordN = '';
   String Password = '';
+  String NewEmail = '';
   String PasswordC = '';
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -166,14 +193,18 @@ class _MyHomePageState extends State<ChangeMyEmail> {
                       labelText: 'New Email',
                     ),
                     validator: (b) {
-                      if (!isExist) {
+                      if (!isValid) {
                         return 'the email is badly formatted';
                       }
+                      if (isSame)
+                        return " The new email that you entered is the same current email";
+                      if (isRegistered)
+                        return "The email is already exists in the app";
                       return null;
                     },
                     onChanged: (String s) {
                       setState(() {
-                        Password = s;
+                        NewEmail = s;
                       });
                     },
                     keyboardType: TextInputType.emailAddress,
@@ -195,41 +226,21 @@ class _MyHomePageState extends State<ChangeMyEmail> {
                     },
                     onChanged: (String s) {
                       setState(() {
-                        PasswordN = s;
+                        Password = s;
                       });
                     },
                   ),
                   SizedBox(
                     height: 8,
                   ),
-                  new TextFormField(
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      hintText: 'Repeat  password',
-                      labelText: 'Repeat  Password',
-                    ),
-                    validator: (b) {
-                      if (!isEqual) {
-                        return 'the password does not match';
-                      }
-                      return null;
-                    },
-                    onChanged: (String s) {
-                      setState(() {
-                        PasswordC = s;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  if (_isLoading) Center(child: CircularProgressIndicator()),
+
+                  if (_isLoading)
+                    Center(child: CircularProgressIndicator()),
                   if (!_isLoading &&
                       PasswordC.length > 0 &&
-                      Password.length > 0 &&
-                      PasswordN.length > 0)
+                      NewEmail.length > 0 )
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: EdgeInsets.all(15),
                         child: new RaisedButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
@@ -238,9 +249,9 @@ class _MyHomePageState extends State<ChangeMyEmail> {
                           child: const Text('Change Email'),
                           onPressed: () {
                             _sumbitAuthForm(
+                              NewEmail,
                               Password,
-                              PasswordN,
-                              PasswordC,
+
                               context,
                             );
 
@@ -250,7 +261,7 @@ class _MyHomePageState extends State<ChangeMyEmail> {
                     )
                   else
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: const EdgeInsets.all(15),
                         child: new RaisedButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),

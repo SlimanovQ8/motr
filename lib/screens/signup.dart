@@ -10,7 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../main.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -27,6 +27,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKePy = new GlobalKey<FormState>();
   final GlobalKey<FormState> _formPasswordConfirmation =
       new GlobalKey<FormState>();
+  bool isValidCivilID = false;
   final GlobalKey<FormState> _formCivilID = new GlobalKey<FormState>();
   final GlobalKey<FormState> _formKeyName = new GlobalKey<FormState>();
 
@@ -61,7 +62,10 @@ class _SignUpPageState extends State<SignUpPage> {
         ExistCivilID = false;
         isNameEmpty = false;
         isCivilIDEmpty = false;
+        isValidCivilID = false;
       });
+
+      final fbm = FirebaseMessaging();
 
       if (!email.contains("@") || !email.contains("."))
         setState(() {
@@ -90,27 +94,48 @@ class _SignUpPageState extends State<SignUpPage> {
           PassNotEqualPass = true;
         });
       }
+      final snapShot = await FirebaseFirestore.instance
+          .collection('CivilIDs')
+          .doc(CivilID)
+          .get();
+      if(snapShot.exists)
+        {
+          setState(() {
+            ExistCivilID = true;
+            isLoading = false;
+          });
+        }
+
       if (!ValidEmail &&
           !PassNotEqualPass &&
           !ExistEmail &&
           !PassLessthan7 &&
           !ExistCivilID &&
           !isNameEmpty) {
-       authResult = await _auth.createUserWithEmailAndPassword(
+        authResult = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-
-          await FirebaseFirestore.instance
-              .collection('Users')
-              .doc(authResult.user.uid)
-              .set({
+String getToken = "";
+fbm.getToken().then((value) => getToken = value);
+        await FirebaseFirestore.instance
+            .collection('CivilIDs')
+            .doc(CivilID)
+            .set({
+          'Civil ID': CivilID,
+        });
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(authResult.user.uid)
+            .set({
           'Name': Name,
           'Civil ID': CivilID,
-            'email': email.toLowerCase(),
-            'psssword': password
-          });
+          'email': email.toLowerCase(),
+          'psssword': password,
+          'isDisability': 'false',
+          'deviceID': getToken,
+        });
           await _auth.signInWithEmailAndPassword(email: email, password: password);
           Navigator.of(context).push(
               MaterialPageRoute(builder: (ctx) => MyApp())
@@ -235,7 +260,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget _submitButton() {
     if (isLoading)
       return CircularProgressIndicator();
-    else
+    else if (!UserName.isEmpty && !UserCivilID.isEmpty && !UserEmail.isEmpty &&!UserPass.isEmpty && !UserPassConfirmation.isEmpty ) {
       return RaisedButton(
         onPressed: () {
           _sumbitAuthForm(UserName, UserCivilID, UserEmail, UserPass,
@@ -247,7 +272,10 @@ class _SignUpPageState extends State<SignUpPage> {
           side: BorderSide(color: Colors.black),
         ),
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
           padding: EdgeInsets.symmetric(vertical: 15),
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -268,6 +296,27 @@ class _SignUpPageState extends State<SignUpPage> {
               style: TextStyle(fontSize: 20, color: Colors.white)),
         ),
       );
+    }
+    else  {
+      return RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+        ),
+        child: Container(
+          width: MediaQuery
+              .of(context)
+              .size
+              .width,
+          padding: EdgeInsets.symmetric(vertical: 15),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+          child: Text('Register',
+              ),
+        ),
+      );
+    }
   }
 
   Widget _loginAccountLabel() {
@@ -365,7 +414,8 @@ class _SignUpPageState extends State<SignUpPage> {
             key: _formCivilID,
             autovalidateMode: AutovalidateMode.always,
             validator: (b) {
-              if (isCivilIDEmpty) return "CivilID cannot be less than 8";
+              if (isCivilIDEmpty) return "Civil ID cannot be less than 8";
+              if (ExistCivilID) return "Civil ID is already exist";
               return null;
             },
             onChanged: (String s) {

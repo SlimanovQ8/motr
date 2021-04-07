@@ -27,36 +27,75 @@ class OkSelf extends StatelessWidget {
           leading:  IconButton(
             icon: Icon(Icons.home, color: Colors.black),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MyApp()),),
+              MaterialPageRoute(builder: (ctx) => MainMotri()),),
 
           ),
-          title: Text('Request sent')
+          title: Text('Request sent', style: TextStyle(
+            color: Colors.black,
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 
         ),
 
-        body: Center(
-          child: Text('Thank you. Your request has been sent to MOI.', textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18), ) ,
+        body: Container(
+            alignment: Alignment.center,
+
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget> [ Text('Thank you. Your request disability code has been sent to MOI.', textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18), ) ,
+                SizedBox(height: 49,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RaisedButton(
+                      onPressed: () {Navigator.of(context).push(
+                        MaterialPageRoute(builder: (ctx) => MainMotri()),
+                      ); },
+                      color: Color(0xfff7892b),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: BorderSide(color: Colors.black),
+                      ),
+
+                      child: Container(
+                        width: 140,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(5)),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Colors.grey.shade200,
+                                offset: Offset(2, 4),
+                                blurRadius: 5,
+                                spreadRadius: 2,
+                              )
+                            ],
+                            gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  Color(0xfffbb448),
+                                  Color(0xfff7892b)
+                                ])),
+                        child: Text('Home',
+                            style:
+                            TextStyle(fontSize: 20, color: Colors.white)),
+                      ),
 
 
+                    ),
+                  ],
+                )
 
+              ],
+            )
 
         ),
 
-        bottomNavigationBar:
-        new RaisedButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          ),
-          color: Color(0xfff7892b),
-          child: const Text('Home'),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MainMotri()),);
-          },
-        ),
       ),
     );
   }

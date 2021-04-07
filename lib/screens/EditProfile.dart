@@ -28,10 +28,12 @@ class EditProfile extends StatelessWidget {
           leading:  IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MyApp()),),
+              MaterialPageRoute(builder: (ctx) => MainMotri()),),
 
           ),
-          title: Text('Edit Profile')
+          title: Text('Edit Profile', style: TextStyle(
+            color: Colors.black,
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 

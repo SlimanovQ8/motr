@@ -15,15 +15,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:Motri/localizations/setLocalization.dart';
 import 'package:Motri/models/lang.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<Album> fetchAlbum(String Make, String year) async {
-  var urrl = Uri.https('https://vpic.nhtsa.dot.gov', '/api/vehicles/getmodelsformakeyear/make/' +
-      Make +
-      '/modelyear/' +
-      year +
-      "?format=json" , {'q': '{http}'});
-  final response = await http.get(urrl);
+  final response = await http.get(
+      'https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/' +
+          Make +
+          '/modelyear/' +
+          year +
+          '?format=json');
 
   if (response.statusCode == 200) {
     return Album.fromJson(jsonDecode(response.body));
@@ -79,11 +80,9 @@ class AddCar extends StatefulWidget {
 class _MyHomePageState extends State<AddCar> {
   final _auth = FirebaseAuth.instance;
 
-  bool checkPlateNum(String PlateNumber) {
-
-  }
+  bool checkPlateNum(String PlateNumber) {}
   var _isLoading = false;
- bool isExist = false;
+  bool isExist = false;
   String userEmail = FirebaseAuth.instance.currentUser.email;
   String use = FirebaseAuth.instance.currentUser.uid;
   var userName = FirebaseFirestore.instance
@@ -99,7 +98,6 @@ class _MyHomePageState extends State<AddCar> {
 
     final String uid = auth.currentUser.uid;
 
-
     final result = await users.doc(uid).get();
     return result.get('Name');
   }
@@ -109,9 +107,18 @@ class _MyHomePageState extends State<AddCar> {
 
     final String uid = auth.currentUser.uid;
 
-
     final result = await users.doc(uid).get();
     return result.get('Civil ID');
+  }
+
+
+  Future<String> getDeviceID() async {
+    final CollectionReference users = firestore.collection('Users');
+
+    final String uid = auth.currentUser.uid;
+
+    final result = await users.doc(uid).get();
+    return result.get('deviceID');
   }
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -121,9 +128,9 @@ class _MyHomePageState extends State<AddCar> {
   Album a = new Album();
   Results _selected;
   List<String> Years = new List();
+  List<String> Dates = new List();
   Future<Album> futureAlbum = fetchAlbum('', '');
   String YR = '';
-
 
   void _sumbitAuthForm(String CarMake, String CarName, String CarYear,
       String PlateNumber, BuildContext ctx) async {
@@ -133,51 +140,64 @@ class _MyHomePageState extends State<AddCar> {
       setState(() {
         _isLoading = true;
       });
-
+      final a = await FirebaseFirestore.instance.collection('Cars').where('UserID', isEqualTo: auth.currentUser.uid).get();
+      int size = a.docs.length;
 
       String CarOwnerName = await getUserName();
       String CarOwnerCID = await getCivilID();
+      String deviceID = await getDeviceID();
 
-
-      final snapShot = await FirebaseFirestore.instance.collection('Cars').doc(PlateNumber).get();
+      final snapShot = await FirebaseFirestore.instance
+          .collection('Cars')
+          .doc(PlateNumber)
+          .get();
 
       if (snapShot.exists) {
         //it exists
         setState(() {
           isExist = true;
         });
-    }
-    else {
+      } else {
         //not exists
         setState(() {
           isExist = false;
         });
+        final fbm = FirebaseMessaging();
+        String getToken = "";
 
-        await FirebaseFirestore.instance.collection('Cars')
+        await FirebaseFirestore.instance
+            .collection('Cars')
             .doc(PlateNumber)
             .set({
           'Car Owner Name': CarOwnerName,
+          'CarOwnerName': CarOwnerName,
           'Car Owner Civil ID': CarOwnerCID,
           'Car Make': CarMake,
           'Car Name': CarName,
+          'CarName': CarName,
           'Car Year': CarYear,
           'Plate Number': PlateNumber,
           'UserID': auth.currentUser.uid,
+          'iaPending': true.toString(),
+          'isRejected': false.toString(),
           'isVerified': false.toString(),
           'isSelected': false.toString(),
           'isDisability': false.toString(),
+          'deviceID': deviceID,
           'Color': '',
+          'Expire Date': Dates.elementAt(size % 5),
+
+        });
 
 
-            });
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (ctx) => ok()),);
-    }
+          MaterialPageRoute(builder: (ctx) => ok()),
+        );
+      }
       setState(() {
         _isLoading = false;
       });
-    }
-     catch (err) {
+    } catch (err) {
       setState(() {
         _isLoading = false;
       });
@@ -185,12 +205,20 @@ class _MyHomePageState extends State<AddCar> {
     }
   }
 
+
+  List <String> ModelNameList = new List();
   void initState() {
     Years.add('');
+    ModelNameList.add('');
+
     for (var i = 2021; i >= 1990; i--) {
       Years.add(i.toString());
     }
-
+    Dates.add('22/8/2023');
+    Dates.add('8/5/2022');
+    Dates.add('4/11/2021');
+    Dates.add('8/2/2023');
+    Dates.add('12/8/2022');
     print(Years.length);
     CarsMakes.add("");
 
@@ -252,18 +280,7 @@ class _MyHomePageState extends State<AddCar> {
   String selectedFc = '';
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: FutureBuilder(
-          future: getUserName(),
-          builder: (_, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text( '');
-            }
-            return Text(snapshot.data + '');
-          },
-        ),
-        backgroundColor: Color(0xfff7892b),
-      ),
+
       body: new SafeArea(
           top: false,
           bottom: false,
@@ -289,6 +306,8 @@ class _MyHomePageState extends State<AddCar> {
                               CarM = newValue;
                               futureAlbum = fetchAlbum(CarM, YR);
                               state.didChange(newValue);
+                              selectedFc = '';
+
                             });
                           },
                           items: CarsMakes.map((String value) {
@@ -322,8 +341,6 @@ class _MyHomePageState extends State<AddCar> {
                           },
                           items: Years.map((String value) {
                             return new DropdownMenuItem(
-
-
                               value: value,
                               child: new Text(value),
                             );
@@ -338,52 +355,65 @@ class _MyHomePageState extends State<AddCar> {
                         icon: Icon(Icons.car_rental),
                         labelText: 'Car Name',
                       ),
+                      isEmpty: selectedFc == '  ',
                       child: FutureBuilder<Album>(
                           future: futureAlbum,
                           builder: (context, snapshot) {
-                            if (snapshot.hasData) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting || CarM == '' || YR == '') {
+                              return DropdownButton(items: null, onChanged: null);
+                            } else {
                               final album = snapshot.data;
                               final results = album.results;
-                              print(results);
+                              print(results[0].modelName);
+
+                              ModelNameList.clear();
+                              ModelNameList.add('');
+
+                              for (var i = 0; i < results.length; i++)
+                                {
+                                  ModelNameList.add(results[i].modelName);
+                                }
                               return DropdownButtonHideUnderline(
-                                  child: DropdownButton<Results>(
-                                isExpanded: true,
-                                items: results.map((result) {
-                                  return DropdownMenuItem<Results>(
-                                    value: result,
-                                    child: Text('${result.modelName}'),
-                                  );
-                                }).toList(),
-                                onChanged: (album) {
-                                  // selected album
-                                  setState(() {
-                                    _selected = album;
-                                    selectedFc = album.modelName;
-                                    state.didChange(album);
-                                  });
-                                },
-                                value: _selected,
-                              ));
-                            } else
-                              return DropdownButtonHideUnderline(
+
                                   child: DropdownButton(
                                 isExpanded: true,
+                                isDense: true,
+                                value: selectedFc,
+
+
+
+                                onChanged: (value) {
+                                  // selected album
+                                  setState(() {
+                                    //_selected = album;
+                                    selectedFc = value;
+                                    print(selectedFc);
+                                    state.didChange(selectedFc);
+                                  });
+
+                                },
+                                    items: ModelNameList.map((String value) {
+                                      return new DropdownMenuItem(
+                                        value: value,
+                                        child: new Text(value),
+                                      );
+                                    }).toList(),
+
                               ));
+                            }
                           }),
                     );
                   }),
                   new TextFormField(
                     focusNode: FocusNode(),
-
-
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.car_repair),
                       hintText: 'Enter car plate number',
                       labelText: 'Plate Number',
                     ),
                     validator: (b) {
-                      if (isExist)
-                      {
+                      if (isExist) {
                         return 'Plate Number is already registered';
                       }
                       return null;
@@ -391,8 +421,6 @@ class _MyHomePageState extends State<AddCar> {
                     onChanged: (String s) {
                       setState(() {
                         PlN = s;
-
-
                       });
                     },
                     keyboardType: TextInputType.phone,
@@ -400,31 +428,33 @@ class _MyHomePageState extends State<AddCar> {
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                     ],
                   ),
-                  SizedBox(height: 8,),
-                  if (_isLoading)
-
-         Center(child: CircularProgressIndicator()),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  if (_isLoading) Center(child: CircularProgressIndicator()),
                   if (!_isLoading &&
                       YR != '' &&
                       CarM != '' &&
                       selectedFc != '' &&
                       PlN.length > 3)
-
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: const EdgeInsets.all(15),
                         child: new RaisedButton(
                           color: Color(0xfff7892b),
                           child: const Text('Submit'),
                           onPressed: () {
-
-
-                            _sumbitAuthForm(CarM, selectedFc, YR, PlN, context,);
-
+                            _sumbitAuthForm(
+                              CarM,
+                              selectedFc,
+                              YR,
+                              PlN,
+                              context,
+                            );
                           },
                         ))
                   else
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: const EdgeInsets.all(15),
                         child: new RaisedButton(
                           color: Colors.orange,
                           child: const Text('Submit'),

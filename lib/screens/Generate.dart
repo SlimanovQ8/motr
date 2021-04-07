@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'CarInfo.dart';
 import 'mySelectedCar.dart';
 
 class GenerateScreen extends StatefulWidget {
@@ -56,7 +57,18 @@ class GenerateScreenState extends State<GenerateScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Car QR Code'),
+        title: Text('Car QR Code' ,style: TextStyle(
+          color: Colors.black,
+        ),),
+        leading:  IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black, ),
+
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx) => MyCarsInfo()),),
+
+        ),
+        backgroundColor: Color(0xfff7892b),
+
         actions: <Widget>[
 
         ],

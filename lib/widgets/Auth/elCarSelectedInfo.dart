@@ -69,18 +69,7 @@ class _MyHomePageState extends State<CarSelectedInfo> {
   String selectedFc = '';
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: FutureBuilder(
-          future: getUserName(),
-          builder: (_, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Text('');
-            }
-            return Text(snapshot.data + '');
-          },
-        ),
-        backgroundColor: Color(0xfff7892b),
-      ),
+
       body: FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('Cars')

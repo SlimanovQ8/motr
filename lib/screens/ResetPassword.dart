@@ -169,26 +169,26 @@ class _LoginPageState extends State<ResetPass> {
   Widget _submitButton() {
 
     if (isLoading)
-      return CircularProgressIndicator();
+    return CircularProgressIndicator();
     else
       return RaisedButton(
         onPressed: () {
           _sumbitAuthForm(UserEmail, context);
           if (isSent)
-          showDialog(
-              context: context,
-              builder: (_) => new AlertDialog(
-                title: new Text("Material Dialog"),
-                content: new Text("Hey! I'm Coflutter!"),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Close me!'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              ));
+            showDialog(
+                context: context,
+                builder: (_) => new AlertDialog(
+                  title: new Text("Material Dialog"),
+                  content: new Text("Hey! I'm Coflutter!"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Close me!'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    )
+                  ],
+                ));
         }
         ,
         color: Color(0xfff7892b),

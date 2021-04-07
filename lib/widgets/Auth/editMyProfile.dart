@@ -36,18 +36,17 @@ class MyProfile extends State<EditMyProfile> {
 
   final firestore = FirebaseFirestore.instance; //
   FirebaseAuth auth = FirebaseAuth.instance;
-  String e = FirebaseAuth.instance.currentUser.email;
   Future<void> initState() {
-    print(e + "GHJNM ");
-    e= e.toUpperCase();
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: FutureBuilder(
+    return new Container(
+      alignment: Alignment.center,
+      child: FutureBuilder(
           future: FirebaseFirestore.instance
               .collection('Users').where('email', isEqualTo : auth.currentUser.email).get(),
+          // ignore: missing_return
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
 
             if (snapshot.data == null) {
@@ -60,9 +59,26 @@ class MyProfile extends State<EditMyProfile> {
 
               print(snapshot.data.docs.length);
 
-              return Container(
-                child: ListView(children: <Widget>[
-                  ListTile(
+              return Center(
+
+                child: Container(
+
+
+                child: ListView( children: <Widget>[
+                  Padding( padding: EdgeInsets.symmetric(
+                    vertical: 0.0, horizontal: 20.0),
+                  child : Card(
+
+                    elevation: 8.0,
+                    margin: new EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 6.0),
+                  child: Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(
+                              224, 224, 224, .9)),
+                  child: ListTile(
+
                     leading: Icon(Icons.person),
                     title: Text("Name: " +
                         snapshot.data.docs[0].get('Name') +
@@ -71,13 +87,17 @@ class MyProfile extends State<EditMyProfile> {
                         snapshot.data.docs[0].get('Civil ID')),
                     subtitle: Text(snapshot.data.docs[0].get('email')),
                   ),
-
-
+                  ),
+                  ),
+                  ),
 
                   SizedBox(
                   height: 12,
                 ),
-                new RaisedButton(
+                new Container(
+                  padding: EdgeInsets.only(left: 15, right: 15 , bottom: 8.5),
+
+                    child: RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -87,11 +107,14 @@ class MyProfile extends State<EditMyProfile> {
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (ctx) => ChangeEmail()),);
                   },
-                ),
+                ),),
                 SizedBox(
-                  height: 12,
+                  height: 4,
                 ),
-                new RaisedButton(
+                new Container(
+                    padding: EdgeInsets.only(left: 15, right: 15),
+
+                    child: RaisedButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -101,9 +124,9 @@ class MyProfile extends State<EditMyProfile> {
                     Navigator.of(context).push(
                       MaterialPageRoute(builder: (ctx) => ChangePsssword()),);
                   },
-                ),
+                ),)
               ]),
-            );
+            ),);
           }
         },
       ),

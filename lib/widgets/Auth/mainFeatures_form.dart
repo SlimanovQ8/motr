@@ -1,18 +1,34 @@
+import 'package:Motri/screens/AddDisability.dart';
+import 'package:Motri/screens/AlreadySelf.dart';
 import 'package:Motri/screens/CarInfo.dart';
 import 'package:Motri/screens/ForMyself.dart';
 import 'package:Motri/screens/Generate.dart';
 import 'package:Motri/screens/MyCars.dart';
+import 'package:Motri/screens/MySelfCodeFD.dart';
+import 'package:Motri/screens/MySelfCodeFH.dart';
 import 'package:Motri/screens/RequestCode.dart';
+import 'package:Motri/screens/SelectCarDis.dart';
 import 'package:Motri/screens/qr_scan_page.dart';
+import 'package:Motri/screens/tstosy.dart';
+import 'package:Motri/widgets/Auth/ForMyChild.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:Motri/localizations/setLocalization.dart';
+import 'package:Motri/models/lang.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainFeaturesForm extends StatelessWidget {
   final String title;
   final String image;
+  final auth = FirebaseAuth.instance;
+
 
   MainFeaturesForm(this.title, this.image);
   @override
+
   Widget build(BuildContext context) {
 
     return Center ( child: GridTile(
@@ -22,7 +38,17 @@ class MainFeaturesForm extends StatelessWidget {
       //child: ConstrainedBox(
 
        // constraints: BoxConstraints.expand(),
-        child: RaisedButton(
+        child:
+      FutureBuilder(
+      future: FirebaseFirestore.instance
+        .collection('Disabilities')
+        .where('UserID', isEqualTo: auth.currentUser.uid)
+        .get(),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+
+
+
+        return RaisedButton(
 
 
 
@@ -39,13 +65,27 @@ class MainFeaturesForm extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (ctx) => RequestCode()),
               );
-            if(title.compareTo('For myself') == 0 || title.compareTo('لنفئسي') == 0)
+
+            if(title.compareTo('Add Disability') == 0 || title.compareTo('اضافة ذوي احتياجات') == 0)
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) => ForMySelf()),
+                MaterialPageRoute(builder: (ctx) => SelectCarDis()),
               );
+            if(title.compareTo('For myself') == 0 || title.compareTo('لنفئسي') == 0)
+              if (snapshot.data.size <= 0)
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (ctx) => ForMySelf()),
+                );
+            else if (true.toString().compareTo(snapshot.data.docs[0].get('isDisability')) == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => MySelfCodeFromDisability()),
+              );
+            else
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (ctx) => AlreadySelf()),
+            );
             if(title.compareTo('For my child') == 0 || title.compareTo('لطفلي') == 0)
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (ctx) => QRScanPage()),
+                MaterialPageRoute(builder: (ctx) => MyChild()),
               );
           },
         /*  shape: new RoundedRectangleBorder(
@@ -65,7 +105,7 @@ class MainFeaturesForm extends StatelessWidget {
 
 
 
-        ),
+        ); }),
 
      //),
       footer: Center(

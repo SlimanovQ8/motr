@@ -181,20 +181,55 @@ class _myCars extends State<SectionWidget> {
               print (snapshot.data.docs.length);
 
               return ListView.separated(
-                separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
-                ),
+                  separatorBuilder: (context, index) => Divider(
+                    color: Colors.black,
+                  ),
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, int i) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 0.0, horizontal: 20.0),
+                      child: Card(
+                        elevation: 8.0,
+                        margin: new EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 6.0),
+                        child: Container(
+                          height: 80,
+                          decoration: BoxDecoration(
+                              color: Color.fromRGBO(
+                                  224, 224, 224, .9)),
+                          child: ListTile(
 
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, int i)
-                {
-                  return ListTile(
-                    leading: Icon(Icons.car_rental),
-                    title: Text(snapshot.data.docs[i].get('Car Make') + "\n" + snapshot.data.docs[i].get('Car Name')),
-                    subtitle: Text(snapshot.data.docs[i].get('Plate Number')),
-                  );
-                },
-              );
+                            leading: Container(
+                              padding: EdgeInsets.only(right: 12.0),
+                              decoration: new BoxDecoration(
+                                  border: new Border(
+                                      right: new BorderSide(
+                                          width: 1.0,
+                                          color: Colors.black))),
+                              child: Icon(
+                                Icons.car_rental,
+                                size: 35,
+                              ),
+                            ),
+                            title: Text(
+                              snapshot.data.docs[i]
+                                  .get('Car Make') +
+                                  "\n" +
+                                  snapshot.data.docs[i]
+                                      .get('Car Name'),
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            subtitle: Text(
+                              snapshot.data.docs[i]
+                                  .get('Plate Number'),
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  });
             }
           },
       ),

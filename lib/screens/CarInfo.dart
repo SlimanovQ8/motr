@@ -21,6 +21,7 @@ class MyCarsInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Car Info',
+
       home: Scaffold(
         appBar: AppBar(
 
@@ -30,7 +31,9 @@ class MyCarsInfo extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => MainMotri()),),
 
           ),
-          title: Text('Car Info')
+          title: Text('Car Info', style: TextStyle(
+            color: Colors.black
+          ) ,)
           ,
           backgroundColor: Color(0xfff7892b),
 

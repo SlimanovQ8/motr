@@ -33,7 +33,9 @@ class ChangePsssword extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => EditProfile()),),
 
           ),
-          title: Text('Change Password')
+          title: Text('Change Password', style: TextStyle(
+            color: Colors.black,
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 

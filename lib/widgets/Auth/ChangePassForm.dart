@@ -1,5 +1,6 @@
 import 'package:Motri/screens/Main.dart';
 import 'package:Motri/screens/addCar.dart';
+import 'package:Motri/screens/loginPage.dart';
 import 'package:Motri/screens/ok.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,26 +99,26 @@ class _MyHomePageState extends State<ChangeMyPass> {
               .collection('Users')
               .doc(snapShot.id)
               .update({'psssword': NewPassword}).then((value) {
+            FirebaseAuth.instance.signOut();
+
             showDialog(
                 context: context,
                 builder: (_) => new AlertDialog(
-                  title: new Text("Password changed successfully "),
-
-                  actions: <Widget>[
-                    FlatButton(
-                      child: Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop('dialog');
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => MyApp())
-                        );
-                        _isLoading = false;
-                      },
-                    )
-                  ],
-                ));
-              }
-          );
+                      title: new Text("Password changed successfully "),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true)
+                                .pop('dialog');
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => LoginPage()));
+                            _isLoading = false;
+                          },
+                        )
+                      ],
+                    ));
+          });
         }
       }
       setState(() {
@@ -153,7 +154,6 @@ class _MyHomePageState extends State<ChangeMyPass> {
                   new TextFormField(
                     obscureText: true,
                     decoration: const InputDecoration(
-
                       hintText: 'Enter your Current Password',
                       labelText: 'Current Password',
                     ),
@@ -220,7 +220,7 @@ class _MyHomePageState extends State<ChangeMyPass> {
                       Password.length > 0 &&
                       PasswordN.length > 0)
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: EdgeInsets.all(15),
                         child: new RaisedButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
@@ -234,14 +234,11 @@ class _MyHomePageState extends State<ChangeMyPass> {
                               PasswordC,
                               context,
                             );
-
                           },
-
-                        )
-                    )
+                        ))
                   else
                     new Container(
-                        padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                        padding: EdgeInsets.all(15),
                         child: new RaisedButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),

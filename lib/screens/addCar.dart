@@ -32,7 +32,9 @@ class addCar extends StatelessWidget {
     MaterialPageRoute(builder: (ctx) => MyCars()),),
 
         ),
-          title: Text('Add Car'),
+          title: Text('Add Car', style: TextStyle(
+            color: Colors.black
+          ),),
 
 
 

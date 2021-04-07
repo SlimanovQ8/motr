@@ -34,7 +34,9 @@ class ChangeEmail extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => EditProfile()),),
 
           ),
-          title: Text('Change Email')
+          title: Text('Change Email', style: TextStyle(
+            color: Colors.black,
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 

@@ -62,12 +62,14 @@ class MyCars extends StatelessWidget {
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.of(context).push(
 
-              MaterialPageRoute(builder: (ctx) => MyApp()),),
+              MaterialPageRoute(builder: (BuildContext ctx) => MainMotri()),),
 
           ),
 
 
-          title:  Text("My Cars")
+          title:  Text("My Cars", style: TextStyle(
+            color: Colors.black,
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 
