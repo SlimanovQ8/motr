@@ -58,7 +58,7 @@ class GenerateScreenState extends State<GenerateChildScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Child QR Code' ,style: TextStyle(
+          title: Text('Dependent QR Code' ,style: TextStyle(
             color: Colors.black,
           ),),
           leading:  IconButton(

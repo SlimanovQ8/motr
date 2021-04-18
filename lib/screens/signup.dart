@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Motri/screens/Main.dart';
 import 'package:flutter/material.dart';
 import 'package:Motri/screens/Widget/bezierContainer.dart';
 import 'package:Motri/screens/Widget/customClipper.dart';
@@ -30,12 +31,14 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isValidCivilID = false;
   final GlobalKey<FormState> _formCivilID = new GlobalKey<FormState>();
   final GlobalKey<FormState> _formKeyName = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKeyUN = new GlobalKey<FormState>();
 
   bool ValidEmail = false;
   bool PassNotEqualPass = false;
   bool ExistEmail = false;
   bool PassLessthan7 = false;
   bool ExistCivilID = false;
+  bool ExistUserName = false;
   bool isLoading = false;
   String UserEmail = '';
   String UserPass = '';
@@ -43,13 +46,15 @@ class _SignUpPageState extends State<SignUpPage> {
   String UserCivilID = '';
   String UserName = '';
   String errorf = '';
+  String UN = '';
   bool isNameEmpty = false;
+  bool isUserNameEmpty = false;
   bool baw = false;
   bool isCivilIDEmpty = false;
   String errorMessage = '';
   final _auth = FirebaseAuth.instance;
 
-  void _sumbitAuthForm(String Name, String CivilID, String email,
+  void _sumbitAuthForm(String Name, String Usnm, String CivilID, String email,
       String password, String passwordConfirmation, BuildContext ctx) async {
     UserCredential authResult;
     try {
@@ -61,6 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
         PassLessthan7 = false;
         ExistCivilID = false;
         isNameEmpty = false;
+        isUserNameEmpty = false;
         isCivilIDEmpty = false;
         isValidCivilID = false;
       });
@@ -83,6 +89,12 @@ class _SignUpPageState extends State<SignUpPage> {
           isNameEmpty = true;
         });
       }
+
+      if (UN.length < 1) {
+        setState(() {
+          isUserNameEmpty = true;
+        });
+      }
       if (CivilID.length < 8) {
         setState(() {
           isCivilIDEmpty = true;
@@ -94,24 +106,37 @@ class _SignUpPageState extends State<SignUpPage> {
           PassNotEqualPass = true;
         });
       }
+
       final snapShot = await FirebaseFirestore.instance
           .collection('CivilIDs')
           .doc(CivilID)
           .get();
       if(snapShot.exists)
-        {
-          setState(() {
-            ExistCivilID = true;
-            isLoading = false;
-          });
-        }
+      {
+        setState(() {
+          ExistCivilID = true;
+        });
+      }
+
+      final UserN = await FirebaseFirestore.instance
+          .collection('UserNames')
+          .doc(UN)
+          .get();
+      if(snapShot.exists)
+      {
+        setState(() {
+          ExistUserName = true;
+        });
+      }
 
       if (!ValidEmail &&
           !PassNotEqualPass &&
           !ExistEmail &&
           !PassLessthan7 &&
           !ExistCivilID &&
-          !isNameEmpty) {
+          !isNameEmpty &&
+          !isUserNameEmpty &&
+          !ExistUserName) {
         authResult = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
@@ -123,7 +148,15 @@ fbm.getToken().then((value) => getToken = value);
             .collection('CivilIDs')
             .doc(CivilID)
             .set({
-          'Civil ID': CivilID,
+          'CivilID': CivilID,
+        });
+        await FirebaseFirestore.instance
+            .collection('UserNames')
+            .doc(Usnm)
+            .set({
+          'UserName': Usnm,
+          'deviceID': getToken,
+          'UID': authResult.user.uid,
         });
         await FirebaseFirestore.instance
             .collection('Users')
@@ -135,10 +168,11 @@ fbm.getToken().then((value) => getToken = value);
           'psssword': password,
           'isDisability': 'false',
           'deviceID': getToken,
+          'UserName': Usnm,
         });
           await _auth.signInWithEmailAndPassword(email: email, password: password);
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MyApp())
+              MaterialPageRoute(builder: (ctx) => MainMotri())
           );
 
       } else {
@@ -260,10 +294,10 @@ fbm.getToken().then((value) => getToken = value);
   Widget _submitButton() {
     if (isLoading)
       return CircularProgressIndicator();
-    else if (!UserName.isEmpty && !UserCivilID.isEmpty && !UserEmail.isEmpty &&!UserPass.isEmpty && !UserPassConfirmation.isEmpty ) {
+    else if (!UserName.isEmpty && !UN.isEmpty && !UserCivilID.isEmpty && !UserEmail.isEmpty &&!UserPass.isEmpty && !UserPassConfirmation.isEmpty ) {
       return RaisedButton(
         onPressed: () {
-          _sumbitAuthForm(UserName, UserCivilID, UserEmail, UserPass,
+          _sumbitAuthForm(UserName, UN, UserCivilID, UserEmail, UserPass,
               UserPassConfirmation, context);
         },
         color: Color(0xfff7892b),
@@ -340,7 +374,7 @@ fbm.getToken().then((value) => getToken = value);
               width: 10,
             ),
             Text(
-              'Sign Up',
+              'Sign in',
               style: TextStyle(
                   color: Color(0xfff79c4f),
                   fontSize: 13,
@@ -396,6 +430,30 @@ fbm.getToken().then((value) => getToken = value);
             onChanged: (String s) {
               setState(() {
                 UserName = s;
+              });
+            },
+            obscureText: false,
+            decoration: InputDecoration(
+                border: InputBorder.none,
+                fillColor: Color(0xfff3f3f4),
+                filled: true)),
+        Text(
+          'User Name',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        TextFormField(
+            key: _formKeyUN,
+            autovalidateMode: AutovalidateMode.always,
+            validator: (b) {
+              if (isNameEmpty) return "User Name cannot be empty";
+              return null;
+            },
+            onChanged: (String s) {
+              setState(() {
+                UN = s;
               });
             },
             obscureText: false,

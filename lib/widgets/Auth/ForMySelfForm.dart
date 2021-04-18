@@ -85,6 +85,14 @@ class _MyHomePageState extends State<MySelf> {
   List<String> DisTypeArray = new List();
   bool isExistCivilID = false;
   bool isExistOnChild = false;
+  Future<String> getUN() async {
+    final CollectionReference users = firestore.collection('Users');
+
+    final String uid = auth.currentUser.uid;
+
+    final result = await users.doc(uid).get();
+    return result.get('UserName');
+  }
   void _sumbitAuthForm(
       String DisNum, String BlueSNum, String DType, BuildContext ctx) async {
     UserCredential authResult;
@@ -97,6 +105,7 @@ class _MyHomePageState extends State<MySelf> {
       String DisName = await getUserName();
       String DisCivil = await getCivilID();
       String deviceID = await getDeviceID();
+      String UN = await getUN();
 
       final snapShot = await FirebaseFirestore.instance
           .collection('Disabilities')
@@ -148,15 +157,24 @@ class _MyHomePageState extends State<MySelf> {
           'UserID': auth.currentUser.uid,
           'isDisability': '?',
           'deviceID': deviceID,
+          'email': auth.currentUser.email
+
         });
         await FirebaseFirestore.instance
             .collection('DisabilitiesCID')
             .doc(DisNum)
             .set({
-          'DisabilityCivilID': DisName,
+          'DisabilityCivilID': DisCivil,
           'DisabilityName': DisName,
           'deviceID': deviceID,
           'isDisability': '?',
+          'UserName' : UN,
+          'DisabilityNumber': DisNum,
+          'BlueSignNum': BlueSNum,
+          'DisabilityType': DType,
+          'UserID': auth.currentUser.uid,
+          'email': auth.currentUser.email
+
 
         });
         Navigator.of(context).push(

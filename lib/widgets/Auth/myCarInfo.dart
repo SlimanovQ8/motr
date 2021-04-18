@@ -1,4 +1,5 @@
 import 'package:Motri/screens/AddDisability.dart';
+import 'package:Motri/screens/CarInfoAll.dart';
 import 'package:Motri/screens/Generate.dart';
 import 'package:Motri/screens/addCar.dart';
 import 'package:Motri/screens/mySelectedCar.dart';
@@ -241,11 +242,11 @@ class _myCars extends State<myCars> {
                                                             title: Text(
                                                                 'Car Insurace expire date'),
                                                             content: green == true
-                                                                ?  Text("Yourg Car insurance will be expire in " +
+                                                                ?  Text("Your Car insurance will be expire in " +
                                                                     diff
                                                                         .toString() +
                                                                     " days") : orange == true
-                                                            ?Text("Youro Car insurance will be expire in " +
+                                                            ?Text("Your Car insurance will be expire in " +
                                                                 diff
                                                                     .toString() +
                                                                 " days")
@@ -266,9 +267,86 @@ class _myCars extends State<myCars> {
                                                             ],
                                                           ));
                                                 }),
-                                            Icon(Icons.keyboard_arrow_right,
+
+
+                                            IconButton(icon: Icon(Icons.more_horiz,
                                                 color: Colors.black,
-                                                size: 40.0),
+                                                size: 25.0), onPressed: ()
+                                            {
+                                              int buj = i;
+                                              FirebaseFirestore.instance
+                                                  .collection('Cars')
+                                                  .doc(snapshot.data.docs[i].id)
+                                                  .update({
+                                                'isSelected': 'true',
+                                              });
+                                              if (snapshot.data.docs[i]
+                                                  .get('Color') ==
+                                                  '') {
+                                                if (buj % 3 == 0) {
+                                                  print(buj);
+                                                  FirebaseFirestore.instance
+                                                      .collection('Cars')
+                                                      .doc(snapshot.data.docs[i].id)
+                                                      .update({
+                                                    'Color': 'black',
+                                                    'Passenger': '4',
+                                                    'Weight': '1.330',
+                                                    'Height': '1.420',
+                                                    'Insurance Company':
+                                                    'Kuwait  Insurance Company',
+                                                    'Insurance type': 'Private',
+                                                    'Car Reference': '1276905',
+                                                    'Document No': '2299365475l560',
+                                                  });
+                                                } else if (i % 3 == 1) {
+                                                  FirebaseFirestore.instance
+                                                      .collection('Cars')
+                                                      .doc(snapshot.data.docs[i].id)
+                                                      .update({
+                                                    'Color': 'grey',
+                                                    'Passenger': '4',
+                                                    'Weight': '1.200',
+                                                    'Height': '1.220',
+                                                    'Insurance Company':
+                                                    'Ghazal Insurance Company',
+                                                    'Insurance type': 'Private',
+                                                    'Car Reference': '22434345',
+                                                    'Document No': '22089647520',
+                                                  });
+                                                } else if (i % 3 == 2) {
+                                                  FirebaseFirestore.instance
+                                                      .collection('Cars')
+                                                      .doc(snapshot.data.docs[i].id)
+                                                      .update({
+                                                    'Color': 'Red',
+                                                    'Passenger': '4',
+                                                    'Weight': '1.240',
+                                                    'Height': '1.340',
+                                                    'Insurance Company':
+                                                    'Warba Insurance Company',
+                                                    'Insurance type': 'Private',
+                                                    'Car Reference': '144456345',
+                                                    'Document No': '20096547720',
+                                                  });
+                                                }
+                                              }
+                                              for (var b = 0;
+                                              b < snapshot.data.docs.length;
+                                              b++)
+                                                if (b != buj) {
+                                                  FirebaseFirestore.instance
+                                                      .collection('Cars')
+                                                      .doc(snapshot.data.docs[b].id)
+                                                      .update(
+                                                      {'isSelected': 'false'});
+                                                }
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (ctx) =>
+                                                        AllCarInfo()),
+                                              );
+                                            }),
                                           ],
                                         ),
                                         leading: Container(
@@ -300,79 +378,7 @@ class _myCars extends State<myCars> {
                                           style: TextStyle(color: Colors.black),
                                         ),
                                         onTap: () {
-                                          int buj = i;
-                                          FirebaseFirestore.instance
-                                              .collection('Cars')
-                                              .doc(snapshot.data.docs[i].id)
-                                              .update({
-                                            'isSelected': 'true',
-                                          });
-                                          if (snapshot.data.docs[i]
-                                                  .get('Color') ==
-                                              '') {
-                                            if (buj % 3 == 0) {
-                                              print(buj);
-                                              FirebaseFirestore.instance
-                                                  .collection('Cars')
-                                                  .doc(snapshot.data.docs[i].id)
-                                                  .update({
-                                                'Color': 'black',
-                                                'Passenger': '4',
-                                                'Weight': '1.330',
-                                                'Height': '1.420',
-                                                'Insurance Company':
-                                                    'Kuwait  Insurance Company',
-                                                'Insurance type': 'Private',
-                                                'Car Reference': '1276905',
-                                                'Document No': '2299365475l560',
-                                              });
-                                            } else if (i % 3 == 1) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Cars')
-                                                  .doc(snapshot.data.docs[i].id)
-                                                  .update({
-                                                'Color': 'grey',
-                                                'Passenger': '4',
-                                                'Weight': '1.200',
-                                                'Height': '1.220',
-                                                'Insurance Company':
-                                                    'Ghazal Insurance Company',
-                                                'Insurance type': 'Private',
-                                                'Car Reference': '22434345',
-                                                'Document No': '22089647520',
-                                              });
-                                            } else if (i % 3 == 2) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Cars')
-                                                  .doc(snapshot.data.docs[i].id)
-                                                  .update({
-                                                'Color': 'Red',
-                                                'Passenger': '4',
-                                                'Weight': '1.240',
-                                                'Height': '1.340',
-                                                'Insurance Company':
-                                                    'Warba Insurance Company',
-                                                'Insurance type': 'Private',
-                                                'Car Reference': '144456345',
-                                                'Document No': '20096547720',
-                                              });
-                                            }
-                                          }
-                                          for (var b = 0;
-                                              b < snapshot.data.docs.length;
-                                              b++)
-                                            if (b != buj) {
-                                              FirebaseFirestore.instance
-                                                  .collection('Cars')
-                                                  .doc(snapshot.data.docs[b].id)
-                                                  .update(
-                                                      {'isSelected': 'false'});
-                                            }
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (ctx) =>
-                                                    GenerateScreen()),
-                                          );
+
                                         },
                                       ),
                                     ),

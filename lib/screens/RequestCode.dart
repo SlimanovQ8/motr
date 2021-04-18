@@ -33,7 +33,7 @@ class RequestCode extends StatelessWidget {
       image: 'images/SelfTrans.png',
     ),
     Features(
-    title: 'For my child',
+    title: 'For my dependent',
     image: 'images/ChildTrans.png',
     ) ];
     void changeLang(Language lang) {

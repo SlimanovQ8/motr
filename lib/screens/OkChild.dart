@@ -44,7 +44,7 @@ class OkChild extends StatelessWidget {
 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget> [ Text('Thank you. Your request code for your child has been sent to MOI.', textAlign: TextAlign.center,
+              children: <Widget> [ Text('Thank you. Your request code for your dependent has been sent to MOI.', textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18), ) ,
                 SizedBox(height: 49,),
                 Row(

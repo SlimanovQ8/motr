@@ -1,5 +1,6 @@
 import 'package:Motri/main.dart';
-import 'package:Motri/widgets/Auth/MyChildrenCodes.dart';
+import 'package:Motri/screens/CarInfo.dart';
+import 'package:Motri/widgets/Auth/CarInfoAllForm.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
 import 'package:Motri/widgets/Auth/myCarInfo.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +16,13 @@ import 'Main.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Auth/myCarsForm.dart';
 
-void main() => runApp(ChildrenCodes());
+void main() => runApp(AllCarInfo());
 
-class ChildrenCodes extends StatelessWidget {
+class AllCarInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Children Codes ',
+      title: 'Car Info',
 
       home: Scaffold(
         appBar: AppBar(
@@ -29,10 +30,10 @@ class ChildrenCodes extends StatelessWidget {
           leading:  IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MainMotri()),),
+              MaterialPageRoute(builder: (ctx) => MyCarsInfo()),),
 
           ),
-          title: Text('Dependents Codes', style: TextStyle(
+          title: Text('Car Info', style: TextStyle(
               color: Colors.black
           ) ,)
           ,
@@ -41,7 +42,7 @@ class ChildrenCodes extends StatelessWidget {
         ),
 
         body: Center(
-          child: ChildC(),
+          child: AllInfo(),
         ),
       ),
     );

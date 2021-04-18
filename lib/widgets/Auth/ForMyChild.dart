@@ -64,6 +64,14 @@ class _MyHomePageState extends State<MyChild> {
     final result = await users.doc(uid).get();
     return result.get('Name');
   }
+  Future<String> getUN() async {
+    final CollectionReference users = firestore.collection('Users');
+
+    final String uid = auth.currentUser.uid;
+
+    final result = await users.doc(uid).get();
+    return result.get('UserName');
+  }
 
   Future<String> getCivilID() async {
     final CollectionReference users = firestore.collection('Users');
@@ -102,7 +110,7 @@ class _MyHomePageState extends State<MyChild> {
       String DisName = await getUserName();
       String DisCivil = await getCivilID();
       String deviceID = await getDeviceID();
-
+      String userName = await getUN();
       final snapShot = await FirebaseFirestore.instance
           .collection('Disabilities')
           .doc(DisNum)
@@ -172,15 +180,25 @@ class _MyHomePageState extends State<MyChild> {
           'isRejected': false.toString(),
           'isVerified': false.toString(),
           'isSelected': false.toString(),
+          'email': auth.currentUser.email
         });
 
         await FirebaseFirestore.instance
             .collection('DisabilitiesCID')
-            .doc(ChildCivilID)
+            .doc(DisNum)
             .set({
           'DisabilityCivilID': ChildCivilID,
           'DisabilityName': DisName,
           'deviceID': deviceID,
+          'isDisability': "?",
+          'UserName': userName,
+          'DisabilityNumber': DisNum,
+          'BlueSignNum': BlueSNum,
+          'DisabilityType': DType,
+          'UserID': auth.currentUser.uid,
+          'email': auth.currentUser.email
+
+
 
 
         });
@@ -218,7 +236,7 @@ class _MyHomePageState extends State<MyChild> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Text("For My Child", style: TextStyle(
+        title: Text("For My Dependent", style: TextStyle(
           color: Colors.black,
         ),),
         backgroundColor: Color(0xfff7892b),
@@ -236,8 +254,8 @@ class _MyHomePageState extends State<MyChild> {
                   new TextFormField(
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.person),
-                      hintText: 'Enter Your Child Name',
-                      labelText: 'Child Name',
+                      hintText: 'Enter Your dependent Name',
+                      labelText: 'Dependent Name',
                     ),
 
                     onChanged: (String s) {
@@ -251,8 +269,8 @@ class _MyHomePageState extends State<MyChild> {
                   new TextFormField(
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.child_care),
-                      hintText: 'Enter Child Civil ID',
-                      labelText: ' Child CID ',
+                      hintText: 'Enter Dependent Civil ID',
+                      labelText: ' Dependent CID ',
                     ),
                     validator: (b) {
                       if (isExistCivilID) {

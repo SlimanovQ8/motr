@@ -1,5 +1,6 @@
 import 'package:Motri/main.dart';
-import 'package:Motri/widgets/Auth/MyChildrenCodes.dart';
+import 'package:Motri/widgets/Auth/AddUserSelectCar.dart';
+import 'package:Motri/widgets/Auth/SelectCarDisForm.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
 import 'package:Motri/widgets/Auth/myCarInfo.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +16,13 @@ import 'Main.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Auth/myCarsForm.dart';
 
-void main() => runApp(ChildrenCodes());
+void main() => runApp(AddUserSC());
 
-class ChildrenCodes extends StatelessWidget {
+class AddUserSC extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Children Codes ',
+      title: 'Add User',
 
       home: Scaffold(
         appBar: AppBar(
@@ -32,16 +33,16 @@ class ChildrenCodes extends StatelessWidget {
               MaterialPageRoute(builder: (ctx) => MainMotri()),),
 
           ),
-          title: Text('Dependents Codes', style: TextStyle(
+          title: Text('Select Car', style: TextStyle(
               color: Colors.black
-          ) ,)
+          ),)
           ,
           backgroundColor: Color(0xfff7892b),
 
         ),
 
         body: Center(
-          child: ChildC(),
+          child: SelectUserForm(),
         ),
       ),
     );

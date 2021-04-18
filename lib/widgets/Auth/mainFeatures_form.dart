@@ -1,4 +1,5 @@
 import 'package:Motri/screens/AddDisability.dart';
+import 'package:Motri/screens/AddUserSelectCar.dart';
 import 'package:Motri/screens/AlreadySelf.dart';
 import 'package:Motri/screens/CarInfo.dart';
 import 'package:Motri/screens/ForMyself.dart';
@@ -57,9 +58,13 @@ class MainFeaturesForm extends StatelessWidget {
 
 
             if(title.compareTo('Car Info') == 0 || title.compareTo('معلومات السياره') == 0)
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
-            );
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
+              );
+            if(title.compareTo('Add User') == 0 || title.compareTo('اضافة شخص') == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => AddUserSC()),
+              );
 
             if(title.compareTo('Request Code') == 0 || title.compareTo('طلب رمز') == 0)
               Navigator.of(context).push(
@@ -83,7 +88,7 @@ class MainFeaturesForm extends StatelessWidget {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (ctx) => AlreadySelf()),
             );
-            if(title.compareTo('For my child') == 0 || title.compareTo('لطفلي') == 0)
+            if(title.compareTo('For my dependent') == 0 || title.compareTo('لطفلي') == 0)
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (ctx) => MyChild()),
               );

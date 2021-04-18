@@ -71,37 +71,44 @@ exports.CarStatus = functions.firestore.document("Cars/{zrga}")
     });
 
 exports.DisRequest = functions.firestore.document("AddDisabilities/{zrga}")
-    .onCreate((change, context) => {
+    .onUpdate((change, context) => {
       console.log("zrga");
-      const newValue = change.data();
+      const newValue = change.after.data();
       console.log(newValue);
 
       // Notification details.
       // eslint-disable-next-line max-len
-      const payload = {
-        notification: {
-          title: newValue.PlateNumber,
-          tag: newValue.PlateNumber,
+      if (newValue.Status.localeCompare("Pending") == 0) {
+        const payload = {
+          notification: {
+            title: newValue.PlateNumber,
+            tag: newValue.PlateNumber,
 
-          // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
 
-          // eslint-disable-next-line max-len
-          body: "Hello " + change.data().geterName + ". " + change.data().SenderName + " wants to add you to his car!",
-        },
-        data: {
-          "click_action": "FLUTTER_NOTIFICATION_CLICK",
-          "sound": "default",
-          "status": "done",
-          "screen": "screenA",
-          "title": newValue.PlateNumber,
-          "tag": newValue.PlateNumber,
-          "body": "Hello " + change.data().geterName + ". " + change.data().SenderName + " wants to add you to his car!",
-        },
-      };
+            // eslint-disable-next-line max-len
+            body: "Hello " + newValue.geterName + ". " + newValue.SenderName + " wants to add you to his car!",
+          },
+          data: {
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+            "sound": "default",
+            "status": "done",
+            "screen": "screenA",
+            "UserName": newValue.UN,
+            "title": newValue.PlateNumber,
+            "tag": newValue.PlateNumber,
+            "NotifyID": newValue.NotifyID,
+            "DisabilityNumber": newValue.DisabilityNumber,
+            "geterName": newValue.geterName,
+            "email": newValue.geterEmail,
+            "body": "Hello " + newValue.geterName + ". " + newValue.SenderName + " wants to add you to his car!",
+          },
+        };
 
-      const previousValue = change.data();
-      console.log(previousValue);
-      return admin.messaging().sendToDevice(newValue.deviceID, payload);
+        const previousValue = change.before.data();
+        console.log(previousValue);
+        return admin.messaging().sendToDevice(newValue.deviceID, payload);
+      }
     });
 // eslint-disable-next-line max-len
 exports.DisRequestStatus = functions.firestore.document("AddDisabilities/{zrga}")
@@ -180,25 +187,25 @@ exports.ChildRequest = functions.firestore.document("DisabilitiesChild/{zrga}")
 
       // Notification details.
       // eslint-disable-next-line max-len
-      if (newValue.isDisability.localeCompare("true") == 0) {
+      if (newValue.isDisability.localeCompare("true") == 0 && change.before.data().isDisability.localeCompare("?") == 0) {
         const payload = {
           notification: {
-            title: "Child Request Accepted",
+            title: "Dependent Request Accepted",
             tag: "RequestStatus",
 
             // eslint-disable-next-line max-len
 
             // eslint-disable-next-line max-len
-            body: "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your child " + change.after.data().ChildName + " is accepted",
+            body: "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your dependent " + change.after.data().ChildName + " is accepted",
           },
           data: {
             "click_action": "FLUTTER_NOTIFICATION_CLICK",
             "sound": "default",
             "status": "done",
             "screen": "screenA",
-            "title": "Child Request Accepted",
+            "title": "Dependent Request Accepted",
             "tag": "RequestStatus",
-            "body": "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your child " + change.after.data().ChildName + " is accepted",
+            "body": "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your dependent " + change.after.data().ChildName + " is accepted",
           },
         };
 
@@ -206,25 +213,25 @@ exports.ChildRequest = functions.firestore.document("DisabilitiesChild/{zrga}")
         console.log(previousValue);
         return admin.messaging().sendToDevice(newValue.deviceID, payload);
         // eslint-disable-next-line max-len
-      } else if (newValue.isDisability.localeCompare("false") == 0) {
+      } else if (newValue.isDisability.localeCompare("false") == 0 && change.before.data().isDisability.localeCompare("?") == 0) {
         const payload = {
           notification: {
-            title: "Child Request Rejected",
+            title: "Dependent Request Rejected",
             tag: "RequestStatus",
 
             // eslint-disable-next-line max-len
 
             // eslint-disable-next-line max-len
-            body: "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your child  " + change.after.data().ChildName + " is rejected",
+            body: "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your dependent  " + change.after.data().ChildName + " is rejected",
           },
           data: {
             "click_action": "FLUTTER_NOTIFICATION_CLICK",
             "sound": "default",
             "status": "done",
             "screen": "screenA",
-            "title": "Child Request Rejected",
+            "title": "Dependent Request Rejected",
             "tag": "RequestStatus",
-            "body": "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your child  " + change.after.data().ChildName + " is rejected",
+            "body": "Hello " + change.after.data().DisabilityParentName + " Your Disability Request for your dependent  " + change.after.data().ChildName + " is rejected",
           },
         };
 
@@ -306,6 +313,115 @@ exports.SelfRequest = functions.firestore.document("Disabilities/{zrga}")
         const previousValue = change.before.data();
         console.log(previousValue);
         console.log(change.after.data);
+        return admin.messaging().sendToDevice(newValue.deviceID, payload);
+      } else {
+        return;
+      }
+    });
+exports.AddUser = functions.firestore.document("AddUser/{zrga}")
+    .onUpdate((change, context) => {
+      console.log("zrga");
+      const newValue = change.after.data();
+      console.log(newValue);
+
+      // Notification details.
+      // eslint-disable-next-line max-len
+      if (newValue.Status.localeCompare("Pending") == 0) {
+        const payload = {
+          notification: {
+            title: "Add Request",
+            tag: newValue.UN,
+
+            // eslint-disable-next-line max-len
+
+            // eslint-disable-next-line max-len
+            body: "Hello " + newValue.geterName + ". " + newValue.SenderName + " wants to add you to his car ( " + newValue.CarName + ")",
+          },
+          data: {
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+            "sound": "default",
+            "status": "done",
+            "screen": newValue.PlateNumber,
+            "PlateNumber": newValue.PlateNumber,
+            "geterUN": newValue.UN,
+            "title": "Add Request",
+            "tag": "AddUser",
+            "email": newValue.geterEmail,
+            "NotifyID": newValue.NotifyID,
+            "SenderName": newValue.SenderName,
+            "SenderUserName": newValue.SenderUserName,
+            "CarName": newValue.CarName,
+            "geterName": newValue.geterName,
+            "body": "Hello " + newValue.geterName + ". " + newValue.SenderName + " wants to add you to his car ( " + newValue.CarName + ")",
+          },
+        };
+
+        return admin.messaging().sendToDevice(newValue.deviceID, payload);
+      }
+    });
+// eslint-disable-next-line max-len
+exports.UserRequestStatus = functions.firestore.document("AddUser/{zrga}")
+    .onUpdate((change, context) => {
+      console.log("zrga");
+      const newValue = change.after.data();
+      console.log(newValue);
+
+      // Notification details.
+      // eslint-disable-next-line max-len
+      if (newValue.Status.localeCompare("Accepted") == 0) {
+        const payload = {
+          notification: {
+            title: "Request Accepted",
+            tag: "RequestAcceptedUser",
+
+            // eslint-disable-next-line max-len
+
+            // eslint-disable-next-line max-len
+            body: "Hello " + change.after.data().SenderName + " your request got accepted from " + newValue.geterName,
+          },
+          data: {
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+            "sound": "default",
+            "status": "done",
+            "screen": "screenA",
+            "title": "Request Accepted",
+            "tag": "RequestAcceptedUser",
+            // eslint-disable-next-line max-len
+            "body": "Hello " + change.after.data().SenderName + " your request got accepted from " + newValue.geterName,
+          },
+        };
+
+        const previousValue = change.before.data();
+        console.log(previousValue);
+        console.log(change.after.data);
+        return admin.messaging().sendToDevice(newValue.SenderDeviceID, payload);
+      // eslint-disable-next-line max-len
+      } else if (newValue.Status.localeCompare("Rejected") == 0) {
+        const payload = {
+          notification: {
+            title: "Request Rejected",
+            tag: "RequestRejectedUser",
+
+            // eslint-disable-next-line max-len
+
+            // eslint-disable-next-line max-len
+            body: "Hello " + change.after.data().SenderName + " your request got rejected from " + newValue.geterName,
+
+          },
+          data: {
+            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+            "sound": "default",
+            "status": "done",
+            "screen": "screenA",
+            "title": "Request Rejected",
+            "tag": "RequestRejectedUser",
+            // eslint-disable-next-line max-len
+            "body": "Hello " + change.after.data().SenderName + " your request got rejected from " + newValue.geterName,
+          },
+        };
+
+        const previousValue = change.before.data();
+        console.log(previousValue);
         return admin.messaging().sendToDevice(newValue.deviceID, payload);
       } else {
         return;

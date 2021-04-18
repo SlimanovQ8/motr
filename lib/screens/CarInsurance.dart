@@ -1,4 +1,5 @@
 import 'package:Motri/screens/CarInfo.dart';
+import 'package:Motri/screens/CarInfoAll.dart';
 import 'package:Motri/widgets/Auth/CarInsuranceInfo.dart';
 import 'package:Motri/widgets/Auth/addCarForm.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
@@ -34,7 +35,7 @@ class CarInsurance extends StatelessWidget {
             icon: Icon(Icons.arrow_back, color: Colors.black, ),
 
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => CarSelected()),),
+              MaterialPageRoute(builder: (ctx) => AllCarInfo()),),
 
           ),
           title: Text('Car Insurance', style: TextStyle(

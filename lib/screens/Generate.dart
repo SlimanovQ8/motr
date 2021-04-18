@@ -95,24 +95,6 @@ class GenerateScreenState extends State<GenerateScreen> {
     );
   }
 
-  Future<void> _captureAndSharePng() async {
-    try {
-      RenderRepaintBoundary boundary = globalKey.currentContext.findRenderObject();
-      var image = await boundary.toImage();
-      ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
-      Uint8List pngBytes = byteData.buffer.asUint8List();
-
-      final tempDir = await getTemporaryDirectory();
-      final file = await new File('${tempDir.path}/image.png').create();
-      await file.writeAsBytes(pngBytes);
-
-      final channel = const MethodChannel('channel:me.alfian.share/share');
-      channel.invokeMethod('shareFile', 'image.png');
-
-    } catch(e) {
-      print(e.toString());
-    }
-  }
 
   _contentWidget(String PN) {
     final bodyHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).viewInsets.bottom;

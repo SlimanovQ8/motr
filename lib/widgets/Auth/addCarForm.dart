@@ -186,7 +186,8 @@ class _MyHomePageState extends State<AddCar> {
           'deviceID': deviceID,
           'Color': '',
           'Expire Date': Dates.elementAt(size % 5),
-
+          'UsersCount': "0",
+          'DisabilitiesCount': "0",
         });
 
 
