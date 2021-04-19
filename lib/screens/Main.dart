@@ -173,12 +173,12 @@ class _StatefulWrapperState extends State<MainMotri>  {
               'deviceID': value,
 
             });
-            FirebaseFirestore.instance.collection("Cars").doc(Cars.docs[i].id).collection('DisabilitiesList').get().then((value) {
+            FirebaseFirestore.instance.collection("Cars").doc(Cars.docs[i].id).collection('DisabilitiesList').where("Status", isEqualTo: "Accepted").get().then((value) {
               FirebaseFirestore.instance.collection('Cars').doc(Cars.docs[i].id).update({
                 'DisabilitiesCount': value.docs.length.toString(),
               });
             });
-            FirebaseFirestore.instance.collection("Cars").doc(Cars.docs[i].id).collection('UsersList').get().then((value) {
+            FirebaseFirestore.instance.collection("Cars").doc(Cars.docs[i].id).collection('UsersList').where("Status", isEqualTo: "Accepted").get().then((value) {
               FirebaseFirestore.instance.collection('Cars').doc(Cars.docs[i].id).update({
                 'UsersCount': value.docs.length.toString(),
               });
@@ -571,7 +571,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
         var email = message['data']['email'];
         var Us = message['data']['UserName'];
         print(screen);
-        var SenderUN = message['notification']['tag'];
+        var SenderUN = message['data']['tag'];
         print('');
         print(SenderUN);
         if (tag == 'Car Rejected' || tag == 'Car Accepted') {
@@ -625,7 +625,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
           );
         }
         else
-        if (tag == ' Self Request Accepted' || tag == 'Self Request Rejected' ||
+        if (tag == 'Self Request Accepted' || tag == 'Self Request Rejected' ||
             tag == 'Dependent Request Accepted' ||
             tag == 'Dependent Request Rejected') {
           final now = new DateTime.now();
@@ -913,7 +913,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
         var email = message['data']['email'];
         var Us = message['data']['UserName'];
         print(screen);
-        var SenderUN = message['notification']['tag'];
+        var SenderUN = message['data']['tag'];
         print('');
         print(SenderUN);
         if (tag == 'Car Rejected' || tag == 'Car Accepted') {
@@ -1712,7 +1712,16 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                       leading: new Icon(Icons.delete),
                                                                       title: new Text('Delete'),
                                                                       tileColor: Colors.red,
-                                                                      onTap: () => {}
+                                                                      onTap: () => {
+                                                                      setState(() {
+                                                                      FirebaseFirestore.instance.
+                                                                      collection('Notifications').doc(UN).collection('UserNotifications').doc(snapshot.data.docs[i].id).delete();
+
+                                                                      }) ,
+
+
+                                                                Navigator.pop(context)
+                                                                      },
                                                                   ),
                                                                   new ListTile(
                                                                     leading: new Icon(Icons.cancel),

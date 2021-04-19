@@ -173,7 +173,7 @@ exports.DisRequestStatus = functions.firestore.document("AddDisabilities/{zrga}"
 
         const previousValue = change.before.data();
         console.log(previousValue);
-        return admin.messaging().sendToDevice(newValue.deviceID, payload);
+        return admin.messaging().sendToDevice(newValue.SenderDeviceID, payload);
       } else {
         return;
       }
