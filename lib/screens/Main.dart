@@ -1,6 +1,7 @@
 import 'package:Motri/localizations/setLocalization.dart';
 import 'package:Motri/models/lang.dart';
 import 'package:Motri/screens/ChildCodes.dart';
+import 'package:Motri/screens/CommonLogo.dart';
 import 'package:Motri/screens/EditProfile.dart';
 import 'package:Motri/screens/MyCars.dart';
 import 'package:Motri/screens/MySelfCodeFD.dart';
@@ -179,7 +180,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
             });
             FirebaseFirestore.instance.collection("Cars").doc(Cars.docs[i].id).collection('UsersList').get().then((value) {
               FirebaseFirestore.instance.collection('Cars').doc(Cars.docs[i].id).update({
-                'DisabilitiesCount': value.docs.length.toString(),
+                'UsersCount': value.docs.length.toString(),
               });
             });
           }
@@ -1421,35 +1422,50 @@ class _StatefulWrapperState extends State<MainMotri>  {
         ),
         body: indexXX == 1 ? new Scaffold(
 
-            body:
-                  new Container(
-                    child: new Center(
-                      child: new FutureBuilder(
-                          future: FirebaseFirestore.instance
-                              .collection('Notifications').doc(UN).collection(
-                              'UserNotifications')
-                              .get(),
-                          builder:
-                              (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.data == null) {
-                              return Container(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
+            body:  new Container(
+              child: new Center(
+                child: new FutureBuilder(
+                    future: FirebaseFirestore.instance
+                        .collection('Notifications').doc(UN).collection(
+                        'UserNotifications')
+                        .get(),
+                    builder:
+                        (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.data == null) {
+                        return Container(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      } else if (snapshot.data.docs.length == 0) {
+                        return Container(
+                          child: Center(
+                            child: Text(
+                              'You have no notifications yet.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        );
+                      } else {
+                          return Container(
+                          alignment: Alignment.center,
+                          child: Column
+                            (
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.all(20),
+                                child: Text(
+                                  "Notifications",
+                                  style: TextStyle(fontSize: 30),
                                 ),
-                              );
-                            } else if (snapshot.data.docs.length == 0) {
-                              return Container(
-                                child: Center(
-                                  child: Text(
-                                    'You have no notifications yet.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ),
-                              );
-                            } else {
-
-                              return ListView.separated(
+                              ),
+                              Expanded(child: SizedBox(
+                                height: 60,
+                              child: ListView.separated(
                                   separatorBuilder: (context, index) =>
                                       Divider(
                                         color: Colors.black,
@@ -1457,11 +1473,11 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                   itemCount: snapshot.data.docs.length,
                                   itemBuilder: (context, int i) {
 
-                                      FirebaseFirestore.instance
-                                          .collection('Notifications').doc(UN).collection(
-                                          'UserNotifications').doc(snapshot.data.docs[i].id).update({
-                                        "Status": "Read"
-                                      });
+                                    FirebaseFirestore.instance
+                                        .collection('Notifications').doc(UN).collection(
+                                        'UserNotifications').doc(snapshot.data.docs[i].id).update({
+                                      "Status": "Read"
+                                    });
 
                                     return Padding(
                                       padding: EdgeInsets.symmetric(
@@ -1482,23 +1498,23 @@ class _StatefulWrapperState extends State<MainMotri>  {
 
                                           child: ListTile(
 
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
+                                            trailing: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
 
-                                                  if(snapshot.data.docs[i].get(
-                                                      'title') ==
-                                                      'Disability Add Request' ||
-                                                      snapshot.data.docs[i].get(
-                                                          'title') ==
-                                                          'Add Request')
-                                                    IconButton(icon: Icon(Icons
-                                                        .keyboard_arrow_right,
-                                          color: Colors.black,
-                                          size: 40.0,
+                                                if(snapshot.data.docs[i].get(
+                                                    'title') ==
+                                                    'Disability Add Request' ||
+                                                    snapshot.data.docs[i].get(
+                                                        'title') ==
+                                                        'Add Request')
+                                                  IconButton(icon: Icon(Icons
+                                                      .keyboard_arrow_right,
+                                                    color: Colors.black,
+                                                    size: 40.0,
 
-                                        ),
-                                                      onPressed: () {
+                                                  ),
+                                                    onPressed: () {
                                                       setState(() {
                                                         if (snapshot.data.docs[i].get('title') == 'Disability Add Request') {
                                                           showDialog(
@@ -1679,66 +1695,66 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                           );
                                                         }
                                                       });
-                                                      },
-                                                    )
-                                                  else
-                                        IconButton(
-                                        icon: Icon(Icons.more_horiz,),
-                                          onPressed: ()
-                                          {
-                                            showModalBottomSheet(
-                                                context: context,
-                                                builder: (BuildContext bc){
-                                                  return Container(
-                                                    child: new Wrap(
-                                                      children: <Widget>[
-                                                        new ListTile(
-                                                            leading: new Icon(Icons.delete),
-                                                            title: new Text('Delete'),
-                                                            tileColor: Colors.red,
-                                                            onTap: () => {}
-                                                        ),
-                                                        new ListTile(
-                                                          leading: new Icon(Icons.cancel),
-                                                          title: new Text('Cancel'),
-                                                          onTap: () => {},
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                            );
-                                          },
-                                        ),
+                                                    },
+                                                  )
+                                                else
+                                                  IconButton(
+                                                    icon: Icon(Icons.more_horiz,),
+                                                    onPressed: ()
+                                                    {
+                                                      showModalBottomSheet(
+                                                          context: context,
+                                                          builder: (BuildContext bc){
+                                                            return Container(
+                                                              child: new Wrap(
+                                                                children: <Widget>[
+                                                                  new ListTile(
+                                                                      leading: new Icon(Icons.delete),
+                                                                      title: new Text('Delete'),
+                                                                      tileColor: Colors.red,
+                                                                      onTap: () => {}
+                                                                  ),
+                                                                  new ListTile(
+                                                                    leading: new Icon(Icons.cancel),
+                                                                    title: new Text('Cancel'),
+                                                                    onTap: () => {},
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            );
+                                                          }
+                                                      );
+                                                    },
+                                                  ),
 
 
-                                                ],
+                                              ],
+                                            ),
+
+
+                                            leading: Container(
+                                              padding: EdgeInsets.only(
+                                                  right: 12.0),
+                                              decoration: new BoxDecoration(
+                                                  border: new Border(
+                                                      right: new BorderSide(
+                                                          width: 1.0,
+                                                          color: Colors
+                                                              .black))),
+                                              child: Icon(
+                                                Icons.notifications,
+                                                size: 35,
                                               ),
-
-
-                                              leading: Container(
-                                                padding: EdgeInsets.only(
-                                                    right: 12.0),
-                                                decoration: new BoxDecoration(
-                                                    border: new Border(
-                                                        right: new BorderSide(
-                                                            width: 1.0,
-                                                            color: Colors
-                                                                .black))),
-                                                child: Icon(
-                                                  Icons.notifications,
-                                                  size: 35,
-                                                ),
-                                              ),
-                                              title: Text(
-                                                snapshot.data.docs[i]
-                                                    .get('title') +
-                                                    "\n" +
-                                                    snapshot.data.docs[i]
-                                                        .get('body'),
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
+                                            ),
+                                            title: Text(
+                                              snapshot.data.docs[i]
+                                                  .get('title') +
+                                                  "\n" +
+                                                  snapshot.data.docs[i]
+                                                      .get('body'),
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
 
 
 
@@ -1746,11 +1762,18 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                         ),
                                       ),
                                     );
-                                  });
-                            }
-                          }),
-                    ),
-                  ),
+                                  }),))
+
+                            ],
+                          ),
+                        );
+
+
+                      }
+                    }),
+              ),
+            ),
+
 
 
 
