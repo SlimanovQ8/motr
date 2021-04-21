@@ -101,6 +101,7 @@ exports.DisRequest = functions.firestore.document("AddDisabilities/{zrga}")
             "DisabilityNumber": newValue.DisabilityNumber,
             "geterName": newValue.geterName,
             "email": newValue.geterEmail,
+            "authID": newValue.authID,
             "body": "Hello " + newValue.geterName + ". " + newValue.SenderName + " wants to add you to his car!",
           },
         };
@@ -347,6 +348,7 @@ exports.AddUser = functions.firestore.document("AddUser/{zrga}")
             "title": "Add Request",
             "tag": "AddUser",
             "email": newValue.geterEmail,
+            "authID": newValue.authID,
             "NotifyID": newValue.NotifyID,
             "SenderName": newValue.SenderName,
             "SenderUserName": newValue.SenderUserName,
@@ -422,7 +424,7 @@ exports.UserRequestStatus = functions.firestore.document("AddUser/{zrga}")
 
         const previousValue = change.before.data();
         console.log(previousValue);
-        return admin.messaging().sendToDevice(newValue.deviceID, payload);
+        return admin.messaging().sendToDevice(newValue.SenderDeviceID, payload);
       } else {
         return;
       }

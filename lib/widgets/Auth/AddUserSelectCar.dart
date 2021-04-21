@@ -83,88 +83,109 @@ class AddUserSelectCar extends State<SelectUserForm> {
                 ),
               ),
             )*/
-            return ListView.separated(
-                separatorBuilder: (context, index) => Divider(
-                  color: Colors.black,
-                ),
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, int i) {
-                  return Padding(
-                    padding:
-                    EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
-                    child: Card(
-                      elevation: 8.0,
-                      margin: new EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 6.0),
-                      child: Container(
-                        height: 80,
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(224, 224, 224, .9)),
-                        child: ListTile(
-                          leading: Container(
-                            padding: EdgeInsets.only(right: 12.0),
-                            decoration: new BoxDecoration(
-                                border: new Border(
-                                    right: new BorderSide(
-                                        width: 1.0, color: Colors.black))),
-                            child: Icon(
-                              Icons.car_rental,
-                              size: 35,
-                            ),
-                          ),
-                          title: Text(
-                            snapshot.data.docs[i].get('Car Make') +
-                                "\n" +
-                                snapshot.data.docs[i].get('Car Name'),
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          subtitle: Text(
-                            snapshot.data.docs[i].get('Plate Number'),
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              IconButton(
-                                  icon: Icon(Icons.person,
 
-                                      size: 40.0),
-                                  onPressed: () {
-
-                                  }),
-                              Text(snapshot.data.docs[i].get('UsersCount'), style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black
-                              ),),
-
-                            ],
-                          ),
-                          onTap: () {
-                            int buj = i;
-                            FirebaseFirestore.instance
-                                .collection('Cars')
-                                .doc(snapshot.data.docs[i].id)
-                                .update({
-                              'isSelected': 'true',
-                            });
-
-                            for (var b = 0; b < snapshot.data.docs.length; b++)
-                              if (b != buj) {
-                                FirebaseFirestore.instance
-                                    .collection('Cars')
-                                    .doc(snapshot.data.docs[b].id)
-                                    .update({'isSelected': 'false'});
-                              }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (ctx) => AddUser()),
-                            );
-                          },
-                        ),
-                      ),
+            return Container(
+              alignment: Alignment.center,
+              child: Column
+                (
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.all(20),
+                    child: Text(
+                      "Select a car",
+                      style: TextStyle(fontSize: 30),
                     ),
-                  );
-                });
+                  ),
+                  Expanded(child: SizedBox(
+                    height: 60,
+                    child: ListView.separated(
+                        separatorBuilder: (context, index) => Divider(
+                          color: Colors.black,
+                        ),
+                        itemCount: snapshot.data.docs.length,
+                        itemBuilder: (context, int i) {
+                          return Padding(
+                            padding:
+                            EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+                            child: Card(
+                              elevation: 8.0,
+                              margin: new EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 6.0),
+                              child: Container(
+                                height: 80,
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(224, 224, 224, .9)),
+                                child: ListTile(
+                                  leading: Container(
+                                    padding: EdgeInsets.only(right: 12.0),
+                                    decoration: new BoxDecoration(
+                                        border: new Border(
+                                            right: new BorderSide(
+                                                width: 1.0, color: Colors.black))),
+                                    child: Icon(
+                                      Icons.car_rental,
+                                      size: 35,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    snapshot.data.docs[i].get('Car Make') +
+                                        "\n" +
+                                        snapshot.data.docs[i].get('Car Name'),
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  subtitle: Text(
+                                    snapshot.data.docs[i].get('Plate Number'),
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      IconButton(
+                                          icon: Icon(Icons.person,
+
+                                              size: 40.0),
+                                          onPressed: () {
+
+                                          }),
+                                      Text(snapshot.data.docs[i].get('UsersCount'), style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black
+                                      ),),
+
+                                    ],
+                                  ),
+                                  onTap: () {
+                                    int buj = i;
+                                    FirebaseFirestore.instance
+                                        .collection('Cars')
+                                        .doc(snapshot.data.docs[i].id)
+                                        .update({
+                                      'isSelected': 'true',
+                                    });
+
+                                    for (var b = 0; b < snapshot.data.docs.length; b++)
+                                      if (b != buj) {
+                                        FirebaseFirestore.instance
+                                            .collection('Cars')
+                                            .doc(snapshot.data.docs[b].id)
+                                            .update({'isSelected': 'false'});
+                                      }
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) => AddUser()),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        }),))
+
+                ],
+              ),);
           }
         },
       ),

@@ -222,12 +222,13 @@ class _StatefulWrapperState extends State<MainMotri>  {
         var notifyID = message['data']['NotifyID'];
         var geterUN = message['data']['geterUN'];
         var geterName = message['data']['geterUN'];
-        var PlateNumber = message['data']['geterName'];
+        var PlateNumber = message['data']['PlateNumber'];
         var SenderName = message['data']['SenderName'];
         var SenderUserName = message['data']['SenderUserName'];
         var email = message['data']['email'];
         var Us = message['data']['UserName'];
         var DisNumber = message['data']['DisabilityNumber'];
+        var authID = message['data']['authID'];
         print(screen);
         var SenderUN = message['notification']['tag'];
         print('');
@@ -366,6 +367,9 @@ class _StatefulWrapperState extends State<MainMotri>  {
             "Status": "Unread",
             "time": now,
             "email": email,
+            "authID": authID,
+            "PlateNumber": PlateNumber,
+            "UN": geterUN
           });
           docid.update({
             "NotifyID": docid.id,
@@ -392,7 +396,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             'Status': 'Accepted',
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Accepted',
                           });
@@ -404,7 +408,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                           });
                           FirebaseFirestore.instance
                               .collection('Cars').doc(PlateNumber).collection(
-                              'Users').get().then((value) {
+                              'UsersList').get().then((value) {
                             FirebaseFirestore.instance.collection('Cars').doc(PlateNumber).update({
                               'UsersCount': value.docs.length.toString(),
                             });
@@ -421,7 +425,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Rejected',
                           });
@@ -463,6 +467,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
             "PlateNumber": tag,
             "email": email,
             "DisNumber": DisNumber,
+            "authID": authID,
           });
           docid.update({
             "NotifyID": docid.id,
@@ -483,7 +488,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Accepted',
                           });
@@ -525,7 +530,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Rejected',
                           });
@@ -563,359 +568,12 @@ class _StatefulWrapperState extends State<MainMotri>  {
         var notifyID = message['data']['NotifyID'];
         var geterUN = message['data']['geterUN'];
         var PlateNumber = message['data']['PlateNumber'];
-        var SenderName = message['data']['SenderName'];
-        var SenderUserName = message['data']['SenderUserName'];
-        var DisNumber = message['data']['DisabilityNumber'];
-
-
-        var email = message['data']['email'];
         var Us = message['data']['UserName'];
-        print(screen);
-        var SenderUN = message['data']['tag'];
-        print('');
-        print(SenderUN);
-        if (tag == 'Car Rejected' || tag == 'Car Accepted') {
-          print(tag);
-          final now = new DateTime.now();
-
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": tag,
-            "body": body,
-            "Status": "Unread",
-            "time": now
-
-          });
-          docid.update({
-            "NotifyID": docid.id
-          });
-          return showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  AlertDialog(
-                    title: Text(tag),
-                    content: Text(body),
-                    actions: [
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
-                          );
-                        },
-
-                        child: Text('My Cars'),
-                      ),
-
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Ok'),
-                      ),
-                    ],
-                  )
-          );
-        }
-        else
-        if (tag == 'Self Request Accepted' || tag == 'Self Request Rejected' ||
-            tag == 'Dependent Request Accepted' ||
-            tag == 'Dependent Request Rejected') {
-          final now = new DateTime.now();
-
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": tag,
-            "body": body,
-            "Status": "Unread",
-            "time": now
-          });
-          docid.update({
-            "NotifyID": docid.id
-          });
-          showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  AlertDialog(
-                    title: Text(tag),
-                    content: Text(body),
-                    actions: [
-
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Ok'),
-                      ),
-                    ],
-                  )
-          );
-        }
-
-        else if (tag == 'Request Accepted' || tag == 'Request Rejected') {
-          final now = new DateTime.now();
-
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": tag,
-            "body": body,
-            "Status": "Unread",
-            "time": now
-          });
-          docid.update({
-            "NotifyID": docid.id
-          });
-          showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  AlertDialog(
-                    title: Text(tag),
-                    content: Text(body),
-                    actions: [
-
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Ok'),
-                      ),
-                    ],
-                  )
-          );
-        }
-        else if (tag == 'Add Request') {
-          final now = new DateTime.now();
-
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": tag,
-            "body": body,
-            "Status": "Unread",
-            "time": now,
-            "email": email,
-          });
-          docid.update({
-            "NotifyID": docid.id,
-            "NoID": notifyID,
-          });
-
-          print(tag.toString() + 'YHNB GVBHM ');
-          showDialog(
-              context: context,
-              builder: (context) =>
-                  AlertDialog(
-                    title: Text('Add Request'),
-                    content: Text(body),
-                    actions: [
-                      FlatButton(
-                        textColor: Colors.lightGreen,
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          FirebaseFirestore.instance
-                              .collection('AddUser').doc(notifyID).update({
-
-                            'Status': 'Accepted',
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
-
-                            'Status': 'Accepted',
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(PlateNumber).collection(
-                              'UsersList').doc(geterUN).update({
-                            'Status': 'Accepted',
-
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(PlateNumber).collection(
-                              'Users').get().then((value) {
-                            FirebaseFirestore.instance.collection('Cars').doc(PlateNumber).update({
-                              'UsersCount': value.docs.length.toString(),
-                            });
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Accept'),
-
-                      ),
-                      FlatButton(
-                        textColor: Colors.red,
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
-
-                            'Status': 'Rejected',
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(PlateNumber).collection(
-                              'UsersList').doc(geterUN).delete();
-                          FirebaseFirestore.instance
-                              .collection('AddUser').doc(notifyID).update({
-
-                            'Status': 'Rejected',
-                          }).then((value) {
-                            FirebaseFirestore.instance.collection(
-                                'AddUser').doc(notifyID).delete();
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Decline'),
-
-                      ),
-                    ],
-                  )
-          );
-        }
-
-        else if (tag.toString().contains('0') || tag.toString().contains('1') ||
-            tag.toString().contains('2') || tag.toString().contains('3') ||
-            tag.toString().contains('4') || tag.toString().contains('5') ||
-            tag.toString().contains('6') || tag.toString().contains('7') ||
-            tag.toString().contains('8') || tag.toString().contains('9')) {
-          print(tag.toString() + 'YHNB GVBHM ');
-          final now = new DateTime.now();
-
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": "Disability Add Request",
-            "body": body,
-            "Status": "Unread",
-            "time": now,
-            "PlateNumber": tag,
-            "email": email,
-            "DisNumber": DisNumber,
-
-          });
-          docid.update({
-            "NotifyID": docid.id,
-            "NoID": notifyID,
-
-          });
-          showDialog(
-              context: context,
-              builder: (context) =>
-                  AlertDialog(
-                    title: Text('Add Request'),
-                    content: Text(body),
-                    actions: [
-                      FlatButton(
-                        textColor: Colors.lightGreen,
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
-
-                            'Status': 'Accepted',
-                          });
-                          FirebaseFirestore.instance
-                              .collection('AddDisabilities')
-                              .doc(notifyID)
-                              .update({
-
-                            'Status': 'Accepted',
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(tag).update({
-
-                            'isDisability': 'true',
-                          });
-
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(tag).collection(
-                              'DisabilitiesList').doc(DisNumber).update({
-                            'Status': "Accepted",
-
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(tag).collection(
-                              'DisabilitiesList').get().then((value) {
-                            FirebaseFirestore.instance.collection('Cars').doc(tag).update({
-                              'DisabilitiesCount': value.docs.length.toString(),
-                            });
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Accept'),
-
-                      ),
-                      FlatButton(
-                        textColor: Colors.red,
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
-
-                            'Status': 'Rejected',
-                          });
-
-                          FirebaseFirestore.instance
-                              .collection('Cars').doc(tag).collection(
-                              'DisabilitiesList').doc(DisNumber).delete();
-                          FirebaseFirestore.instance
-                              .collection('AddDisabilities')
-                              .doc(notifyID)
-                              .update({
-
-                            'Status': 'Rejected',
-                          })
-                              .then((value) {
-                            FirebaseFirestore.instance.collection(
-                                'AddDisabilities').doc(notifyID).delete();
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Decline'),
-
-                      ),
-                    ],
-                  )
-          );
-        }
-      },
-      onResume: (Map<String, dynamic> message) async {
-        var tag = message['data']['title'];
-        var body = message['data']['body'];
-        var PN = message['data']['tag'];
-        var screen = message['data']['screen'];
-        var notifyID = message['data']['NotifyID'];
-        var geterUN = message['data']['geterUN'];
-        var PlateNumber = message['data']['PlateNumber'];
-        var SenderName = message['data']['SenderName'];
-        var SenderUserName = message['data']['SenderUserName'];
-        var DisNumber = message['data']['DisabilityNumber'];
-
-
         var email = message['data']['email'];
-        var Us = message['data']['UserName'];
+        var DisNumber = message['data']['DisabilityNumber'];
+        var authID = message['data']['authID'];
         print(screen);
-        var SenderUN = message['data']['tag'];
         print('');
-        print(SenderUN);
         if (tag == 'Car Rejected' || tag == 'Car Accepted') {
           print(tag);
           final now = new DateTime.now();
@@ -1050,6 +708,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
             "Status": "Unread",
             "time": now,
             "email": email,
+            "authID": authID,
           });
           docid.update({
             "NotifyID": docid.id,
@@ -1076,7 +735,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             'Status': 'Accepted',
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Accepted',
                           });
@@ -1088,7 +747,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                           });
                           FirebaseFirestore.instance
                               .collection('Cars').doc(PlateNumber).collection(
-                              'Users').get().then((value) {
+                              'UsersList').get().then((value) {
                             FirebaseFirestore.instance.collection('Cars').doc(PlateNumber).update({
                               'UsersCount': value.docs.length.toString(),
                             });
@@ -1105,7 +764,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Rejected',
                           });
@@ -1147,7 +806,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
             "PlateNumber": tag,
             "email": email,
             "DisNumber": DisNumber,
-
+            "authID": authID,
           });
           docid.update({
             "NotifyID": docid.id,
@@ -1168,7 +827,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Accepted',
                           });
@@ -1210,7 +869,345 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           FirebaseFirestore.instance
-                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(notifyID).update({
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
+
+                            'Status': 'Rejected',
+                          });
+
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(tag).collection(
+                              'DisabilitiesList').doc(DisNumber).delete();
+                          FirebaseFirestore.instance
+                              .collection('AddDisabilities')
+                              .doc(notifyID)
+                              .update({
+
+                            'Status': 'Rejected',
+                          })
+                              .then((value) {
+                            FirebaseFirestore.instance.collection(
+                                'AddDisabilities').doc(notifyID).delete();
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Decline'),
+
+                      ),
+                    ],
+                  )
+          );
+        }
+      },
+      onResume: (Map<String, dynamic> message) async {
+        var tag = message['data']['title'];
+        var body = message['data']['body'];
+        var PN = message['data']['tag'];
+        var screen = message['data']['screen'];
+        var notifyID = message['data']['NotifyID'];
+        var geterUN = message['data']['geterUN'];
+        var PlateNumber = message['data']['PlateNumber'];
+        var Us = message['data']['UserName'];
+        var email = message['data']['email'];
+        var DisNumber = message['data']['DisabilityNumber'];
+        var authID = message['data']['authID'];
+        print(screen);
+        print('');
+        if (tag == 'Car Rejected' || tag == 'Car Accepted') {
+          print(tag);
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": tag,
+            "body": body,
+            "Status": "Unread",
+            "time": now
+
+          });
+          docid.update({
+            "NotifyID": docid.id
+          });
+          return showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  AlertDialog(
+                    title: Text(tag),
+                    content: Text(body),
+                    actions: [
+                      FlatButton(
+                        textColor: Color(0xFF6200EE),
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
+                          );
+                        },
+
+                        child: Text('My Cars'),
+                      ),
+
+                      FlatButton(
+                        textColor: Color(0xFF6200EE),
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Ok'),
+                      ),
+                    ],
+                  )
+          );
+        }
+        else
+        if (tag == ' Self Request Accepted' || tag == 'Self Request Rejected' ||
+            tag == 'Dependent Request Accepted' ||
+            tag == 'Dependent Request Rejected') {
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": tag,
+            "body": body,
+            "Status": "Unread",
+            "time": now
+          });
+          docid.update({
+            "NotifyID": docid.id
+          });
+          showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  AlertDialog(
+                    title: Text(tag),
+                    content: Text(body),
+                    actions: [
+
+                      FlatButton(
+                        textColor: Color(0xFF6200EE),
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Ok'),
+                      ),
+                    ],
+                  )
+          );
+        }
+
+        else if (tag == 'Request Accepted' || tag == 'Request Rejected') {
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": tag,
+            "body": body,
+            "Status": "Unread",
+            "time": now
+          });
+          docid.update({
+            "NotifyID": docid.id
+          });
+          showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  AlertDialog(
+                    title: Text(tag),
+                    content: Text(body),
+                    actions: [
+
+                      FlatButton(
+                        textColor: Color(0xFF6200EE),
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Ok'),
+                      ),
+                    ],
+                  )
+          );
+        }
+        else if (tag == 'Add Request') {
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": tag,
+            "body": body,
+            "Status": "Unread",
+            "time": now,
+            "email": email,
+            "authID": authID,
+          });
+          docid.update({
+            "NotifyID": docid.id,
+            "NoID": notifyID,
+          });
+
+          print(tag.toString() + 'YHNB GVBHM ');
+          showDialog(
+              context: context,
+              builder: (context) =>
+                  AlertDialog(
+                    title: Text('Add Request'),
+                    content: Text(body),
+                    actions: [
+                      FlatButton(
+                        textColor: Colors.lightGreen,
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          FirebaseFirestore.instance
+                              .collection('AddUser').doc(notifyID).update({
+
+                            'Status': 'Accepted',
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
+
+                            'Status': 'Accepted',
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(PlateNumber).collection(
+                              'UsersList').doc(geterUN).update({
+                            'Status': 'Accepted',
+
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(PlateNumber).collection(
+                              'UsersList').get().then((value) {
+                            FirebaseFirestore.instance.collection('Cars').doc(PlateNumber).update({
+                              'UsersCount': value.docs.length.toString(),
+                            });
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Accept'),
+
+                      ),
+                      FlatButton(
+                        textColor: Colors.red,
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
+
+                            'Status': 'Rejected',
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(PlateNumber).collection(
+                              'UsersList').doc(geterUN).delete();
+                          FirebaseFirestore.instance
+                              .collection('AddUser').doc(notifyID).update({
+
+                            'Status': 'Rejected',
+                          }).then((value) {
+                            FirebaseFirestore.instance.collection(
+                                'AddUser').doc(notifyID).delete();
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Decline'),
+
+                      ),
+                    ],
+                  )
+          );
+        }
+
+        else if (tag.toString().contains('0') || tag.toString().contains('1') ||
+            tag.toString().contains('2') || tag.toString().contains('3') ||
+            tag.toString().contains('4') || tag.toString().contains('5') ||
+            tag.toString().contains('6') || tag.toString().contains('7') ||
+            tag.toString().contains('8') || tag.toString().contains('9')) {
+          print(tag.toString() + 'YHNB GVBHM ');
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": "Disability Add Request",
+            "body": body,
+            "Status": "Unread",
+            "time": now,
+            "PlateNumber": tag,
+            "email": email,
+            "DisNumber": DisNumber,
+            "authID": authID,
+          });
+          docid.update({
+            "NotifyID": docid.id,
+            "NoID": notifyID,
+
+          });
+          showDialog(
+              context: context,
+              builder: (context) =>
+                  AlertDialog(
+                    title: Text('Add Request'),
+                    content: Text(body),
+                    actions: [
+                      FlatButton(
+                        textColor: Colors.lightGreen,
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
+
+                            'Status': 'Accepted',
+                          });
+                          FirebaseFirestore.instance
+                              .collection('AddDisabilities')
+                              .doc(notifyID)
+                              .update({
+
+                            'Status': 'Accepted',
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(tag).update({
+
+                            'isDisability': 'true',
+                          });
+
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(tag).collection(
+                              'DisabilitiesList').doc(DisNumber).update({
+                            'Status': "Accepted",
+
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Cars').doc(tag).collection(
+                              'DisabilitiesList').get().then((value) {
+                            FirebaseFirestore.instance.collection('Cars').doc(tag).update({
+                              'DisabilitiesCount': value.docs.length.toString(),
+                            });
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Accept'),
+
+                      ),
+                      FlatButton(
+                        textColor: Colors.red,
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          FirebaseFirestore.instance
+                              .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
 
                             'Status': 'Rejected',
                           });
@@ -1427,7 +1424,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                 child: new FutureBuilder(
                     future: FirebaseFirestore.instance
                         .collection('Notifications').doc(UN).collection(
-                        'UserNotifications')
+                        'UserNotifications').where("Status" , isEqualTo: "Unread")
                         .get(),
                     builder:
                         (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -1473,11 +1470,6 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                   itemCount: snapshot.data.docs.length,
                                   itemBuilder: (context, int i) {
 
-                                    FirebaseFirestore.instance
-                                        .collection('Notifications').doc(UN).collection(
-                                        'UserNotifications').doc(snapshot.data.docs[i].id).update({
-                                      "Status": "Read"
-                                    });
 
                                     return Padding(
                                       padding: EdgeInsets.symmetric(
@@ -1533,7 +1525,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                             'Status': 'Accepted',
                                                                           });
                                                                           FirebaseFirestore.instance
-                                                                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
+                                                                              .collection('Requests').doc(snapshot.data.docs[i].get('authID')).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Accepted',
                                                                           });
@@ -1588,7 +1580,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                                 .collection('AddDisabilities').doc(snapshot.data.docs[i].get('NoID')).delete();
                                                                           });
                                                                           FirebaseFirestore.instance
-                                                                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
+                                                                              .collection('Requests').doc(snapshot.data.docs[i].get('authID')).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Rejected',
                                                                           });
@@ -1619,12 +1611,12 @@ class _StatefulWrapperState extends State<MainMotri>  {
 
                                                                           FirebaseFirestore
                                                                               .instance
-                                                                              .collection('AddUser').doc(snapshot.data.docs[i].get('NotifyID')).update({
+                                                                              .collection('AddUser').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Accepted',
                                                                           });
                                                                           FirebaseFirestore.instance
-                                                                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
+                                                                              .collection('Requests').doc(snapshot.data.docs[i].get('authID')).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Accepted',
                                                                           });
@@ -1649,9 +1641,10 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                           FirebaseFirestore
                                                                               .instance
                                                                               .collection('Cars')
-                                                                              .doc(snapshot.data.docs[i].get('PlateNumber')).collection('UsersList').doc(snapshot.data.docs[i].get('UN')).set({
+                                                                              .doc(snapshot.data.docs[i].get('PlateNumber')).collection('UsersList').doc(snapshot.data.docs[i].get('UN')).update({
                                                                             'UserName': snapshot.data.docs[i].get('UN')
-                                                                          });
+
+                                                                              });
                                                                           setState(() {
                                                                             FirebaseFirestore.instance
                                                                                 .collection('Notifications').doc(UN).collection('UserNotifications').doc(snapshot.data.docs[i].id).delete();
@@ -1666,17 +1659,22 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                         onPressed: () {
 
                                                                           FirebaseFirestore.instance
-                                                                              .collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
+                                                                              .collection('Requests').doc(snapshot.data.docs[i].get('authID')).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Rejected',
                                                                           });
                                                                           FirebaseFirestore
                                                                               .instance
-                                                                              .collection('AddUser').doc(snapshot.data.docs[i].get('NotifyID'))
+                                                                              .collection('AddUser').doc(snapshot.data.docs[i].get('NoID'))
                                                                               .update({
 
                                                                             'Status': 'Rejected',
                                                                           });
+                                                                          FirebaseFirestore
+                                                                              .instance
+                                                                              .collection('Cars')
+                                                                              .doc(snapshot.data.docs[i].get('PlateNumber')).collection('UsersList').doc(snapshot.data.docs[i].get('UN')).delete();
+
 
                                                                           setState(() {
                                                                             FirebaseFirestore.instance.
@@ -1910,7 +1908,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                               children: <Widget>[
                                                                 new ListTile(
                                                                     leading: new Icon(Icons.delete),
-                                                                    title: new Text('Delete'),
+                                                                    title: new Text('Clear'),
                                                                     tileColor: Colors.red,
                                                                     onTap: ()  {
                                                                       setState(() {
@@ -2062,6 +2060,14 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                                      .collection('DisabilitiesList')
                                                                                      .doc(snapshot.data.docs[i].get('DisabilityNumber')).delete();
                                                                                }
+                                                                             else
+                                                                               {
+                                                                                 FirebaseFirestore.instance.collection('Cars')
+                                                                                     .doc(snapshot.data.docs[i].get('PlateNumber'))
+                                                                                     .collection('UsersList')
+                                                                                     .doc(snapshot.data.docs[i].get('UserName')).delete();
+
+                                                                               }
                                                                             });
 
                                                                       });
@@ -2183,7 +2189,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                               children: <Widget>[
                                                                 new ListTile(
                                                                     leading: new Icon(Icons.delete),
-                                                                    title: new Text('Delete'),
+                                                                    title: new Text('Clear'),
                                                                     tileColor: Colors.red,
                                                                     onTap: ()  {
                                                                       setState(() {

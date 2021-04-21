@@ -25,6 +25,7 @@ class _QRScanPageState extends State<AddUser> {
   @override
   var _isLoading = false;
   bool isExist = true;
+  bool isSameUser = false;
   String userEmail = FirebaseAuth.instance.currentUser.email;
   String use = FirebaseAuth.instance.currentUser.uid;
   var userName = FirebaseFirestore.instance
@@ -128,9 +129,9 @@ class _QRScanPageState extends State<AddUser> {
       setState(() {
         _isLoading = true;
         isRequestExist = false;
+        isExist = true;
+        isSameUser  =false;
       });
-      final a = await FirebaseFirestore.instance.collection('Cars').where('UserID', isEqualTo: auth.currentUser.uid).get();
-      int size = a.docs.length;
       final snapShot = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: DisNum).get();
       print(snapShot);
       if (snapShot.size > 0) {
@@ -175,7 +176,17 @@ class _QRScanPageState extends State<AddUser> {
           isRequestExist = false;
         });
       }
-      if (isExist && !isRequestExist) {
+       if(UserN == DisNum)
+       {
+         setState(() {
+           isSameUser = true;
+         });
+       }
+       else
+         {
+           isSameUser = false;
+         }
+      if (isExist && !isRequestExist && !isSameUser) {
 
 
        var docid =  await FirebaseFirestore.instance.collection('AddUser').add({
@@ -189,7 +200,10 @@ class _QRScanPageState extends State<AddUser> {
           "Status": "Pending",
           "PlateNumber": PlateNumber,
          "geterEmail": email,
-        });
+
+         "authID":  auth.currentUser.uid,
+
+       });
        docid.update({
          "NotifyID": docid.id
        });
@@ -205,6 +219,23 @@ class _QRScanPageState extends State<AddUser> {
          "RequestID": docid.id,
          "UserName": ReciverUserName,
          "geterEmail": email
+       });
+       await FirebaseFirestore.instance
+           .collection('Cars').doc(PlateNumber).collection(
+           'UsersList').doc(ReciverUserName).set({
+         "title": 'User Request',
+         "SenderDeviceID": deviceID,
+         "SenderName": CarOwnerName,
+         "SenderCar": CarName,
+         "deviceID": getReciverDeviceID,
+         "geterName": ReciverUserName,
+         "Status": "Pending",
+         "DisabilityNumber": disNumber,
+         "PlateNumber": PlateNumber,
+         "RequestID": docid.id,
+         "UserName": ReciverUserName,
+
+
        });
         showDialog(
             context: context,
@@ -288,7 +319,7 @@ class _QRScanPageState extends State<AddUser> {
                         alignment: Alignment.center,
                         margin: EdgeInsets.all(20),
                         child: Text(
-                          "Enter User Code",
+                          "Enter Username",
                           style: TextStyle(fontSize: 30),
                         ),
                       ),
@@ -315,6 +346,8 @@ class _QRScanPageState extends State<AddUser> {
                             }
                             if (isRequestExist)
                               return "You make a request for this disability person on this car before";
+                            if(isSameUser)
+                              return "You Can't add yourself";
                             return null;
                           },
 
@@ -367,32 +400,7 @@ class _QRScanPageState extends State<AddUser> {
                           ),
 
                         ),
-                      Container(
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.all(20),
-                        child: Text(
-                          " OR \n Scan the QR Code",
-                          style: TextStyle(
-                            fontSize: 30,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
 
-                      new Container(
-                        width: 200,
-                        child: new IconButton(
-                          onPressed: () {
-                            scanQRCode();
-                          },
-
-                          icon: Icon(
-                            Icons.camera_alt_rounded,
-                            color: Color(0xfff7892b),
-                            size: 100.0,
-                          ),
-                        ),
-                      )
                     ])))),
   );
 

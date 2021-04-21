@@ -171,7 +171,8 @@ class _QRScanPageState extends State<AddDisability> {
             "DisabilityNumber": disNumber,
             "UN": ReciverUserName,
             "PlateNumber": PlateNumber,
-            "geterEmail": email
+            "geterEmail": email,
+            "authID":  auth.currentUser.uid,
 
           });
           docid.update({
