@@ -1,7 +1,11 @@
 import 'package:Motri/screens/AddDisability.dart';
+import 'package:Motri/screens/AddLic.dart';
+import 'package:Motri/screens/AddLicense.dart';
 import 'package:Motri/screens/AddUserSelectCar.dart';
 import 'package:Motri/screens/AlreadySelf.dart';
+import 'package:Motri/screens/CarCheck.dart';
 import 'package:Motri/screens/CarInfo.dart';
+import 'package:Motri/screens/DisCheck.dart';
 import 'package:Motri/screens/ForMyself.dart';
 import 'package:Motri/screens/Generate.dart';
 import 'package:Motri/screens/MyCars.dart';
@@ -9,6 +13,7 @@ import 'package:Motri/screens/MySelfCodeFD.dart';
 import 'package:Motri/screens/MySelfCodeFH.dart';
 import 'package:Motri/screens/RequestCode.dart';
 import 'package:Motri/screens/SelectCarDis.dart';
+import 'package:Motri/screens/ViewTickets.dart';
 import 'package:Motri/screens/qr_scan_page.dart';
 import 'package:Motri/screens/tstosy.dart';
 import 'package:Motri/widgets/Auth/ForMyChild.dart';
@@ -71,6 +76,23 @@ class MainFeaturesForm extends StatelessWidget {
                 MaterialPageRoute(builder: (ctx) => RequestCode()),
               );
 
+            if(title.compareTo('Scan') == 0 || title.compareTo('مسح') == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => CarCheck()),
+              );
+            if(title.compareTo('Disability Check') == 0 || title.compareTo('التأكد من معاق') == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => DisCheck()),
+              );
+
+            if(title.compareTo('License') == 0 || title.compareTo('رخصة قياده') == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => Licenser()),
+              );
+            if(title.compareTo('Show Tickets') == 0 || title.compareTo('مشاهدة المخالفات') == 0)
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (ctx) => ViewTickets()),
+              );
             if(title.compareTo('Add Disability') == 0 || title.compareTo('اضافة ذوي احتياجات') == 0)
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (ctx) => SelectCarDis()),

@@ -5,8 +5,10 @@ import 'package:Motri/route/route_names.dart';
 import 'package:Motri/screens/AddDisability.dart';
 import 'package:Motri/screens/AuthFirebase.dart';
 import 'package:Motri/screens/EditProfile.dart';
+import 'package:Motri/screens/MainPolice.dart';
 import 'package:Motri/screens/OkChild.dart';
 import 'package:Motri/screens/OkSelf.dart';
+import 'package:Motri/screens/RequestCode.dart';
 import 'package:Motri/screens/loginPage.dart';
 import 'package:Motri/screens/ok.dart';
 import 'package:flutter/cupertino.dart';
@@ -104,11 +106,20 @@ class _MyAppState extends State<MyApp> {
 
               user = FirebaseAuth.instance.currentUser.email;
               print(user);
+              if(user.endsWith("@policemotri.com"))
+              {
 
 
               FocusScope.of(context).requestFocus(FocusNode());
 
-              return MainMotri();
+              return PoliceMain();
+              }
+              else
+                {
+                  FocusScope.of(context).requestFocus(FocusNode());
+
+                  return MainMotri();
+                }
 
             }
             return LoginPage();

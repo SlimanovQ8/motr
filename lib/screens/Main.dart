@@ -6,6 +6,8 @@ import 'package:Motri/screens/EditProfile.dart';
 import 'package:Motri/screens/MyCars.dart';
 import 'package:Motri/screens/MySelfCodeFD.dart';
 import 'package:Motri/screens/MySelfCodeFH.dart';
+import 'package:Motri/screens/addCar.dart';
+import 'package:Motri/screens/loginPage.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
 import 'package:Motri/widgets/Auth/myCarInfo.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +73,7 @@ Future<String> getUserName() async {
         .collection('Users').doc(FirebaseAuth.instance.currentUser.uid).update({
 
       'deviceID': value,
+      "UserID": auth.currentUser.uid
     })
   });
 
@@ -99,12 +102,17 @@ final List<Features> GridFeatures = [
     image: 'images/carInfo.png',
   ),
   Features(
-    title: 'Show Tickets',
-    image: 'images/payTickets.png',
-  ),
-  Features(
     title: 'Request Code',
     image: 'images/requestCode.png',
+  ),
+
+  Features(
+    title: 'License',
+    image: 'images/license.png',
+  ),
+  Features(
+    title: 'Show Tickets',
+    image: 'images/payTickets.png',
   ),
   Features(
     title: 'Add Disability',
@@ -114,12 +122,9 @@ final List<Features> GridFeatures = [
     title: 'Add User',
     image: 'images/addUser.png',
   ),
-  Features(
-    title: 'License ',
-    image: 'images/license.png',
-  ),
 ];
 String UN = auth.currentUser.email;
+int aaa = 1;
 String UNN = '';
 Future sleep1() {
   return new Future.delayed(const Duration(seconds: 1), () => "1");
@@ -143,7 +148,51 @@ class _StatefulWrapperState extends State<MainMotri>  {
    getUsername().then((value) => UNN = value);
 
 
-   print('NC');
+    FirebaseFirestore.instance
+        .collection('Users').doc(FirebaseAuth.instance.currentUser.uid).get().then((value) => {
+          if (value.get("FirstTime") == true.toString())
+            {
+         showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            AlertDialog(
+              title: Text("HI " + value.get("Name")),
+              content: Text("Would you like to add your first car?"),
+              actions: [
+                FlatButton(
+                  textColor: Color(0xFF6200EE),
+                  onPressed: () {
+                    FirebaseFirestore.instance.collection('Users').doc(auth.currentUser.uid).update({
+                    "FirstTime": "false"
+                    });
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => addCar()),
+                    );
+                  },
+
+                  child: Text('Yes'),
+                ),
+
+                FlatButton(
+                  textColor: Color(0xFF6200EE),
+                  onPressed: () {
+                    FirebaseFirestore.instance.collection('Users').doc(auth.currentUser.uid).update({
+                      "FirstTime": "false"
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Text('No'),
+                ),
+              ],
+            )
+    ),
+    FirebaseFirestore.instance.collection('Users').doc(auth.currentUser.uid).update({
+      "FirstTime": "false"
+    }),
+
+            }
+    });
+    print('NC');
     print( NotifyCount);
     final fbm = FirebaseMessaging();
     String getToken = "";
@@ -229,6 +278,8 @@ class _StatefulWrapperState extends State<MainMotri>  {
         var Us = message['data']['UserName'];
         var DisNumber = message['data']['DisabilityNumber'];
         var authID = message['data']['authID'];
+        var CarName = message['data']['CarName'];
+
         print(screen);
         var SenderUN = message['notification']['tag'];
         print('');
@@ -369,7 +420,11 @@ class _StatefulWrapperState extends State<MainMotri>  {
             "email": email,
             "authID": authID,
             "PlateNumber": PlateNumber,
-            "UN": geterUN
+            "UN": geterUN,
+            "CarOwnerUserName": SenderUserName,
+            "CarOwnerName": SenderName,
+            "CarName": CarName,
+
           });
           docid.update({
             "NotifyID": docid.id,
@@ -394,6 +449,18 @@ class _StatefulWrapperState extends State<MainMotri>  {
                               .collection('AddUser').doc(notifyID).update({
 
                             'Status': 'Accepted',
+                          });
+
+                          FirebaseFirestore.instance
+                              .collection('UserNames').doc(geterUN).collection("OtherCars").doc(PlateNumber).set({
+                            "PlateNumber": PlateNumber,
+                            "email": email,
+                            "authID": authID,
+                            "UN": geterUN,
+                            "CarOwnerUserName": SenderUserName,
+                            "CarOwnerName": SenderName,
+                            "CarName": CarName,
+
                           });
                           FirebaseFirestore.instance
                               .collection('Requests').doc(authID).collection('MyRequests').doc(notifyID).update({
@@ -1350,13 +1417,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                     Navigator.pop(context);
                   },
                 ),
-                ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Sign out'),
-                  onTap: () {
-                    FirebaseAuth.instance.signOut();
-                  },
-                ),
+
                 FutureBuilder(
                     future: FirebaseFirestore.instance
                         .collection('Disabilities')
@@ -1384,6 +1445,17 @@ class _StatefulWrapperState extends State<MainMotri>  {
                         return ListTile();
                       }
                     }),
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Sign out'),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (ctx) => LoginPage()),
+                    );
+                  },
+                ),
 
                 FutureBuilder(
                     future: FirebaseFirestore.instance
@@ -1616,6 +1688,18 @@ class _StatefulWrapperState extends State<MainMotri>  {
                                                                             'Status': 'Accepted',
                                                                           });
                                                                           FirebaseFirestore.instance
+                                                                              .collection('UserNames').doc(snapshot.data.docs[i].get("UN"))
+                                                                              .collection("OtherCars").doc(snapshot.data.docs[i].get('PlateNumber')).set({
+                                                                            "PlateNumber": snapshot.data.docs[i].get('PlateNumber'),
+                                                                            "email": snapshot.data.docs[i].get('email'),
+                                                                            "authID": snapshot.data.docs[i].get('authID'),
+                                                                            "UN": snapshot.data.docs[i].get('UN'),
+                                                                            "CarOwnerUserName": snapshot.data.docs[i].get('CarOwnerUserName'),
+                                                                            "CarOwnerName": snapshot.data.docs[i].get('CarOwnerName'),
+                                                                            "CarName": snapshot.data.docs[i].get('CarName'),
+
+                                                                          });
+                                                                          FirebaseFirestore.instance
                                                                               .collection('Requests').doc(snapshot.data.docs[i].get('authID')).collection('MyRequests').doc(snapshot.data.docs[i].get('NoID')).update({
 
                                                                             'Status': 'Accepted',
@@ -1784,7 +1868,6 @@ class _StatefulWrapperState extends State<MainMotri>  {
 
 
 
-
         ) : indexXX == 0 ? Stack(
           children: [
             /*  Container(
@@ -1793,29 +1876,74 @@ class _StatefulWrapperState extends State<MainMotri>  {
                     fit: BoxFit.cover,
                     image: new AssetImage(
                         'images/bk.jpg'))),
-          ),*/
-            GridView.builder(
-              padding: const EdgeInsets.all(20.0),
-              itemCount: GridFeatures.length,
-              itemBuilder: (ctx, i) =>
-                  MainFeaturesForm(
-                    GridFeatures[i].title,
-                    GridFeatures[i].image,
-                  ),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: MediaQuery
-                    .of(context)
-                    .size
-                    .width /
-                    (MediaQuery
-                        .of(context)
-                        .size
-                        .height / 1.6),
-                crossAxisSpacing: 25,
-                mainAxisSpacing: 12.5,
-              ),
-            )
+          ),
+          */
+            new FutureBuilder(
+                future: FirebaseFirestore.instance
+                    .collection('Cars')
+                    .where('UserID', isEqualTo: auth.currentUser.uid)
+                    .where('isVerified', isEqualTo: true.toString())
+                    .get(),
+                builder:
+                    (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.data == null) {
+                    return Container(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else if (snapshot.data.docs.length == 0) {
+                    return
+                        GridView.builder(
+                          padding: const EdgeInsets.all(20.0),
+                          itemCount: 3,
+                          itemBuilder: (ctx, i) =>
+                              MainFeaturesForm(
+                                GridFeatures[i].title,
+                                GridFeatures[i].image,
+                              ),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: MediaQuery
+                                .of(context)
+                                .size
+                                .width /
+                                (MediaQuery
+                                    .of(context)
+                                    .size
+                                    .height / 1.6),
+                            crossAxisSpacing: 25,
+                            mainAxisSpacing: 12.5,
+                          ),
+                        );
+
+                  } else {
+
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(20.0),
+                      itemCount: 6,
+                      itemBuilder: (ctx, i) =>
+                          MainFeaturesForm(
+                            GridFeatures[i].title,
+                            GridFeatures[i].image,
+                          ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: MediaQuery
+                            .of(context)
+                            .size
+                            .width /
+                            (MediaQuery
+                                .of(context)
+                                .size
+                                .height / 1.6),
+                        crossAxisSpacing: 25,
+                        mainAxisSpacing: 12.5,
+                      ),
+                    );
+                  }
+                }),
+
           ],
         ) : new DefaultTabController(
           length: 3,

@@ -272,6 +272,10 @@ class SelectDis extends State<SelectDisForm> {
                                             .collection('Cars')
                                             .doc(snapshot.data.docs[b].id)
                                             .update({'isSelected': 'false'});
+                                        int number = 1;
+                                        int number2 = 1;
+                                        int n3 = number + number2;
+                                        print(n3);
                                       }
                                     Navigator.of(context).push(
                                       MaterialPageRoute(

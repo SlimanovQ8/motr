@@ -339,10 +339,14 @@ class _myCars extends State<AllInfo> {
                                                                 tileColor: Colors.red,
                                                                 onTap: () => {
                                                                 setState(() {
-                                                                FirebaseFirestore.instance
-                                                                    .collection('Cars')
-                                                                    .doc(snapshot.data.docs[0].id).collection('UsersList').doc(ss.data.docs[i].id)
-                                                                    .delete();
+                                                                  FirebaseFirestore.instance
+                                                                      .collection('Cars')
+                                                                      .doc(snapshot.data.docs[0].id).collection('UsersList').doc(ss.data.docs[i].id)
+                                                                      .delete();
+                                                                  FirebaseFirestore.instance
+                                                                      .collection('UserNames')
+                                                                      .doc(ss.data.docs[i].get('UserName')).collection('OtherCars').doc(snapshot.data.docs[0].id)
+                                                                      .delete();
                                                                 Navigator.pop(context);
 
                                                                 })

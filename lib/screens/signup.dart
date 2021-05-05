@@ -169,6 +169,9 @@ fbm.getToken().then((value) => getToken = value);
           'isDisability': 'false',
           'deviceID': getToken,
           'UserName': Usnm,
+          'FirstTime': "true",
+          'FrontPic': "false",
+          "BackPic": "false",
         });
           await _auth.signInWithEmailAndPassword(email: email, password: password);
           Navigator.of(context).push(

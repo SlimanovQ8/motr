@@ -1,4 +1,5 @@
 
+import 'package:Motri/main.dart';
 import 'package:Motri/screens/ResetPassword.dart';
 import 'package:Motri/screens/signup.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isCivPressed = true;
   String UserEmail = '';
   String UserPass = '';
+  List <String> PoliceNames = new List ();
+  List <String> PoliceCID = new List ();
   final _auth = FirebaseAuth.instance;
 
   void _sumbitAuthForm( String email,
@@ -42,13 +45,69 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = true;
         ValidEmail = false;
       });
-        authResult = await _auth.signInWithEmailAndPassword(
+
+      PoliceNames.add("Sliman");
+      PoliceNames.add("Yousef");
+      PoliceNames.add("Abdulrahman");
+      PoliceNames.add("Saad");
+      PoliceNames.add("Fahad");
+      PoliceCID.add("29069850520");
+      PoliceCID.add("29801410520");
+      PoliceCID.add("27521020525");
+      PoliceCID.add("29855252202");
+      PoliceCID.add("25256235252");
+
+      authResult = await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
 
 
+      final a = await FirebaseFirestore.instance.collection('MOI').get();
+      int size = a.docs.length;
+      final firstTime = await FirebaseFirestore.instance.collection("MOI").where("email", isEqualTo: email.toLowerCase()).get();
 
+      if(email.endsWith("@policemotri.com"))
+      {
+        if (firstTime.docs.length == 0) {
+          await FirebaseFirestore.instance
+              .collection('MOI')
+              .doc(authResult.user.uid)
+              .set({
+            'Name': PoliceNames.elementAt(size % 5),
+            'Civil ID': PoliceCID.elementAt(size & 5),
+            'MOINumber': email.toLowerCase(),
+            'MOINum': email.substring(email.indexOf("m") + 1, email.indexOf("@")),
+            'psssword': password,
+            "UserID": authResult.user.uid,
+            "PlateNumber": ".",
+
+          });
+
+        }
+        else
+          {
+            await FirebaseFirestore.instance
+                .collection('MOI')
+                .doc(firstTime.docs[0].id)
+                .update({
+              'MOINumber': email.toLowerCase(),
+              'MOINum': email.substring(email.indexOf("m") + 1, email.indexOf("@")),
+              'psssword': password,
+              "UserID": firstTime.docs[0].id,
+              "PlateNumber": "..",
+            });
+          }
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (ctx) => MyApp()),);
+
+      }
+      else
+        {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (ctx) => MyApp()),);
+
+        }
     } on PlatformException catch (err) {
       var message = 'An error occurred, please check your credentials!';
 
@@ -87,8 +146,10 @@ class _LoginPageState extends State<LoginPage> {
       onPressed: () {
         if (isCivPressed)
           _sumbitAuthForm(UserEmail, UserPass, context);
-        else
+        else {
+          UserEmail = "m" + UserEmail + "@policemotri.com";
           _sumbitAuthForm(UserEmail, UserPass, context);
+        }
       }
       
       ,
@@ -234,7 +295,8 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
              // if (isCivPressed)
               Text(
-                'Email',
+                isCivPressed?
+                'Email' : 'MOI Number',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               SizedBox(
@@ -246,6 +308,13 @@ class _LoginPageState extends State<LoginPage> {
                       return 'Invalid email address';
                     return null;
                   },
+                  keyboardType: isCivPressed ? TextInputType.emailAddress :  TextInputType.phone,
+                  inputFormatters: !isCivPressed ? [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                  ]:
+                      [
+
+                      ],
                    onChanged: (String s) {
                     setState(() {
                       UserEmail = s;

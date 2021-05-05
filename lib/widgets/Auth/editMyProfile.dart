@@ -73,7 +73,7 @@ class MyProfile extends State<EditMyProfile> {
                     margin: new EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 6.0),
                   child: Container(
-                      height: 100,
+                      height: 120,
                       decoration: BoxDecoration(
                           color: Color.fromRGBO(
                               224, 224, 224, .9)),
@@ -82,6 +82,9 @@ class MyProfile extends State<EditMyProfile> {
                     leading: Icon(Icons.person),
                     title: Text("Name: " +
                         snapshot.data.docs[0].get('Name') +
+                        "\n" +
+                        "Username: " +
+                        snapshot.data.docs[0].get('UserName') +
                         "\n" +
                         "Civil ID: " +
                         snapshot.data.docs[0].get('Civil ID')),

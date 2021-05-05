@@ -1,7 +1,6 @@
-import 'package:Motri/screens/AddUserSelectCar.dart';
 import 'package:Motri/screens/Main.dart';
+import 'package:Motri/screens/MainPolice.dart';
 import 'package:Motri/screens/SelectCarDis.dart';
-import 'package:Motri/widgets/Auth/AddUserSelectCar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -14,18 +13,17 @@ import '../main.dart';
 import 'MyCars.dart';
 import 'mySelectedCar.dart';
 
-class AddUser extends StatefulWidget {
+class DisCheck extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _QRScanPageState();
 }
 
-class _QRScanPageState extends State<AddUser> {
+class _QRScanPageState extends State<DisCheck> {
   String qrCode = 'Unknown';
 
   @override
   var _isLoading = false;
   bool isExist = true;
-  bool isSameUser = false;
   String userEmail = FirebaseAuth.instance.currentUser.email;
   String use = FirebaseAuth.instance.currentUser.uid;
   var userName = FirebaseFirestore.instance
@@ -63,7 +61,14 @@ class _QRScanPageState extends State<AddUser> {
     final result = await users.doc(uid).get();
     return result.get('deviceID');
   }
+  Future<String> getReciverDeviceID(String getReciverID) async {
+    final CollectionReference users = firestore.collection('DisabilitiesCID');
 
+    final String uid = auth.currentUser.uid;
+
+    final result = await users.doc(getReciverID).get();
+    return result.get('deviceID');
+  }
 
   Future<String> getSenderCarName() async {
     final a = await FirebaseFirestore.instance.collection('Cars').where('UserID', isEqualTo: auth.currentUser.uid).where("isSelected" , isEqualTo: "true").get();
@@ -78,67 +83,47 @@ class _QRScanPageState extends State<AddUser> {
 
     return a.docs[0].get('Plate Number');
   }
-  Future<String> getSenderUserName() async {
-    final a = await FirebaseFirestore.instance.collection('Users').doc(auth.currentUser.uid).get();
-
-
-    return a.get('UserName');
-  }
-
-  Future<String> getReciverName(String getReciverName) async {
-    final CollectionReference users = firestore.collection('Users');
+  Future<String> getRecieverEmail(String getE) async {
+    final CollectionReference users = firestore.collection('DisabilitiesCID');
 
     final String uid = auth.currentUser.uid;
 
-    final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
-    return a.docs[0].get('Name');
+    final result = await users.doc(getE).get();
+    return result.get('email');
   }
-  Future<String> getRecieverEmail(String getReciverName) async {
-    final CollectionReference users = firestore.collection('Users');
+  Future<String> getDisabilityName(String getReciverID) async {
+    final CollectionReference users = firestore.collection('DisabilitiesCID');
 
     final String uid = auth.currentUser.uid;
 
-    final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
-    return a.docs[0].get('email');
+    final result = await users.doc(getReciverID).get();
+    return result.get('DisabilityName');
   }
-
   Future<String> getReciverUserName(String getReciverName) async {
-    final CollectionReference users = firestore.collection('Users');
+    final CollectionReference users = firestore.collection('DisabilitiesCID');
 
     final String uid = auth.currentUser.uid;
 
-    final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
-    return a.docs[0].get('UserName');
+    final result = await users.doc(getReciverName).get();
+    return result.get('UserName');
   }
-
-  Future<String> getReciverDeviceIDD(String getReciverName) async {
-    final CollectionReference users = firestore.collection('Users');
-
-    final String uid = auth.currentUser.uid;
-
-    final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
-    return a.docs[0].get('deviceID');
-  }
-
   bool isRequestExist = false;
-
-  void _sumbitAuthForm(String DisNum, BuildContext ctx) async {
+  void _sumbitAuthForm(String PlateNumber, BuildContext ctx) async {
     UserCredential authResult;
-    print(DisNum);
+
     try {
       setState(() {
         _isLoading = true;
-        isRequestExist = false;
         isExist = true;
-        isSameUser  =false;
       });
-      final snapShot = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: DisNum).get();
-      print(snapShot);
-      if (snapShot.size > 0) {
+
+      final chk =  await FirebaseFirestore.instance
+          .collection('Cars').doc(PlateNumber).get();
+      if (chk.exists) {
         //it exists
         setState(() {
           isExist = true;
-          print('rtgutgv');
+          print('ghb');
         });
       } else {
         //not exists
@@ -149,113 +134,10 @@ class _QRScanPageState extends State<AddUser> {
           isExist = false;
         });
       }
-      String CarOwnerName = await getUserName();
-      String deviceID = await getDeviceID();
-      String getReciverDeviceID = await getReciverDeviceIDD(DisNum);
-      String CarName = await getSenderCarName();
-      String PlateNumber = await getPlateNumber();
-      String ReciverName = await getReciverName(DisNum);
-      String ReciverUserName = await getReciverUserName(DisNum);
-      String UserN = await getSenderUserName();
-      String email = await getRecieverEmail(DisNum);
-      final chk =  await FirebaseFirestore.instance
-          .collection('Cars').doc(PlateNumber).collection(
-          'UsersList').doc(ReciverUserName).get();
-      if (chk.exists) {
-        //it exists
-        setState(() {
-          isRequestExist = true;
-          print('ghb');
-        });
-      } else {
-        //not exists
-        print('hgjfjnj');
-        isRequestExist = false;
-        setState(() {
-          print("zrga");
-          isRequestExist = false;
-        });
-      }
-       if(UserN == DisNum)
-       {
-         setState(() {
-           isSameUser = true;
-         });
-       }
-       else
-         {
-           isSameUser = false;
-         }
-      if (isExist && !isRequestExist && !isSameUser) {
+      if (isExist ) {
 
 
-       var docid =  await FirebaseFirestore.instance.collection('AddUser').add({
-          "SenderDeviceID": deviceID,
-          "SenderName": CarOwnerName,
-          "SenderUserName": UserN,
-          "CarName": CarName,
-          "deviceID": getReciverDeviceID,
-          "geterNam*e": ReciverName,
-         "UN": ReciverUserName,
-          "Status": "Pending",
-          "PlateNumber": PlateNumber,
-         "geterEmail": email,
 
-         "authID":  auth.currentUser.uid,
-
-       });
-       docid.update({
-         "NotifyID": docid.id
-       });
-       var ID = await FirebaseFirestore.instance.collection('Requests').doc(auth.currentUser.uid).collection('MyRequests').doc(docid.id).set({
-         "title": 'User Request',
-         "SenderDeviceID": deviceID,
-         "SenderName": CarOwnerName,
-         "SenderCar": CarName,
-         "deviceID": getReciverDeviceID,
-         "geterName": ReciverName,
-         "Status": "Pending",
-         "PlateNumber": PlateNumber,
-         "RequestID": docid.id,
-         "UserName": ReciverUserName,
-         "geterEmail": email
-       });
-       await FirebaseFirestore.instance
-           .collection('Cars').doc(PlateNumber).collection(
-           'UsersList').doc(ReciverUserName).set({
-         "title": 'User Request',
-         "SenderDeviceID": deviceID,
-         "SenderName": CarOwnerName,
-         "SenderCar": CarName,
-         "deviceID": getReciverDeviceID,
-         "geterName": ReciverUserName,
-         "Status": "Pending",
-         "DisabilityNumber": disNumber,
-         "PlateNumber": PlateNumber,
-         "RequestID": docid.id,
-         "UserName": ReciverUserName,
-
-
-       });
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text("Request Sent"),
-              content: Text("Your request has been sent to "  + ReciverUserName),
-              actions: [
-                FlatButton(
-                  textColor: Color(0xFF6200EE),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext ctx) => MainMotri()),
-                    );
-                  },
-                  child: Text('OK'),
-                ),
-
-              ],
-            )
-        );
       }
 
 
@@ -294,16 +176,16 @@ class _QRScanPageState extends State<AddUser> {
   }
   String disNumber = "";
   Widget build(BuildContext context) => MaterialApp(
-    title: 'Add User',
+    title: 'Add Disability',
     home: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (ctx) => AddUserSC()),
+              MaterialPageRoute(builder: (ctx) => MyApp()),
             ),
           ),
-          title: Text('Add User', style: TextStyle(
+          title: Text('Disability Check', style: TextStyle(
               color: Colors.black
           ),),
           backgroundColor: Color(0xfff7892b),
@@ -319,7 +201,7 @@ class _QRScanPageState extends State<AddUser> {
                         alignment: Alignment.center,
                         margin: EdgeInsets.all(20),
                         child: Text(
-                          "Enter Username",
+                          "Enter Car plate number",
                           style: TextStyle(fontSize: 30),
                         ),
                       ),
@@ -330,9 +212,10 @@ class _QRScanPageState extends State<AddUser> {
                           autovalidateMode: AutovalidateMode.always,
                           focusNode: FocusNode(),
                           decoration: const InputDecoration(
-                            hintText: 'Enter UserName',
-                            labelText: 'Username',
+                            hintText: 'Enter car plate number',
+                            labelText: 'Plate Number',
                           ),
+                          keyboardType: TextInputType.phone,
                           onChanged: (String s )
                           {
                             setState(() {
@@ -342,15 +225,14 @@ class _QRScanPageState extends State<AddUser> {
                           validator: (b)
                           {
                             if (isExist == false) {
-                              return "Username does not exist!";
+                              return "Plate number does not exist!";
                             }
-                            if (isRequestExist)
-                              return "You make a request for this disability person on this car before";
-                            if(isSameUser)
-                              return "You Can't add yourself";
+
                             return null;
                           },
-
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
                         ),
                       ),
 
@@ -400,7 +282,32 @@ class _QRScanPageState extends State<AddUser> {
                           ),
 
                         ),
+                      Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.all(20),
+                        child: Text(
+                          " OR \n Scan the QR Code",
+                          style: TextStyle(
+                            fontSize: 30,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
 
+                      new Container(
+                        width: 200,
+                        child: new IconButton(
+                          onPressed: () {
+                            scanQRCode();
+                          },
+
+                          icon: Icon(
+                            Icons.camera_alt_rounded,
+                            color: Color(0xfff7892b),
+                            size: 100.0,
+                          ),
+                        ),
+                      )
                     ])))),
   );
 

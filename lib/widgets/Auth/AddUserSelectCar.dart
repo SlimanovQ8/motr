@@ -148,7 +148,45 @@ class AddUserSelectCar extends State<SelectUserForm> {
 
                                               size: 40.0),
                                           onPressed: () {
+                                            FirebaseFirestore.instance.collection("Users").doc(auth.currentUser.uid)
+                                                .collection("UsersTickets").add({
+                                              "TicketName": "Disability Ticket",
+                                              "TicketPlace": "Hawally",
+                                              "TicketDate": "19-4-2021",
+                                              "CarName": snapshot.data.docs[i].get("Car Name"),
+                                              "PlateNumber": snapshot.data.docs[i].get("Plate Number"),
+                                              "isPaid": "false",
+                                              "TicketAmount": "50",
+                                              "TicketInfo": "Parked in disability parking spot and no disability person in the car"
 
+                                            });
+
+                                            FirebaseFirestore.instance.collection("Users").doc(auth.currentUser.uid)
+                                                .collection("UsersTickets").add({
+                                              "TicketName": "Expired Car Insurance",
+                                              "TicketPlace": "Faiha",
+                                              "TicketDate": "5-4-2021",
+                                              "CarName": snapshot.data.docs[i].get("Car Name"),
+                                              "PlateNumber": snapshot.data.docs[i].get("Plate Number"),
+                                              "isPaid": "false",
+                                              "TicketAmount": "5",
+                                              "TicketInfo": "Car insurance is expired"
+
+
+                                            });
+                                            FirebaseFirestore.instance.collection("Users").doc(auth.currentUser.uid)
+                                                .collection("UsersTickets").add({
+                                              "TicketName": "Driver not registered",
+                                              "TicketPlace": "Mishref",
+                                              "TicketDate": "8-5-2020",
+                                              "CarName": snapshot.data.docs[i].get("Car Name"),
+                                              "PlateNumber": snapshot.data.docs[i].get("Plate Number"),
+                                              "isPaid": "false",
+                                              "TicketAmount": "10",
+                                              "TicketInfo": "The car driver is not added in car users list"
+
+
+                                            });
                                           }),
                                       Text(snapshot.data.docs[i].get('UsersCount'), style: TextStyle(
                                           fontSize: 20,

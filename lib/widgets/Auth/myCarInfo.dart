@@ -1,4 +1,5 @@
 import 'package:Motri/screens/AddDisability.dart';
+import 'package:Motri/screens/AddUser.dart';
 import 'package:Motri/screens/CarInfoAll.dart';
 import 'package:Motri/screens/Generate.dart';
 import 'package:Motri/screens/addCar.dart';
@@ -24,8 +25,11 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:path_provider/path_provider.dart';
+
+GlobalKey globalKey = new GlobalKey();
 
 class getUserCars {
   String _CarMake;
@@ -117,9 +121,60 @@ class _myCars extends State<myCars> {
   Future<void> initState() {
     super.initState();
   }
+  int indexXX = 0;
+
+  _contentWidget(String PN) {
+    final bodyHeight = MediaQuery.of(context).size.height - MediaQuery.of(context).viewInsets.bottom;
+    return Dialog(
+        child: Container(
+
+          height: 400,
+
+            color: Colors.black12,
+      child:  Column(
+        children: <Widget>[
+          Container(
+
+            alignment: Alignment.center,
+            margin: EdgeInsets.all(20),
+            child: Text(
+              "QR Code",
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 20.0,
+              right: 10.0,
+            ),
+            child:  Container(
+              //height: _topSectionHeight,
+
+            ),
+          ),
+          Expanded(
+            child:  Center(
+              child: RepaintBoundary(
+                key: globalKey,
+                child: QrImage(
+                  data: PN,
+                  size: 0.3 * bodyHeight,
+
+
+                ),
+              ),
+            ),
+          ),
+
+        ],
+      ),
+        ),
+    );
+  }
 
   Widget build(BuildContext context) {
-    return new DefaultTabController(
+    return new Scaffold(
+     body: indexXX == 0? DefaultTabController(
       length: 3,
       child: new Scaffold(
         appBar: new TabBar(
@@ -567,7 +622,235 @@ class _myCars extends State<myCars> {
             ],
           ),
         ),
+
       ),
-    );
+    ):  FutureBuilder(
+       future: FirebaseFirestore.instance
+           .collection('UserNames')
+           .where('UID', isEqualTo: auth.currentUser.uid)
+
+           .get(),
+       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+         if (snapshot.data == null) {
+           return Container(
+             child: Center(
+               child: CircularProgressIndicator(),
+             ),
+           );
+         } else if (snapshot.data.docs.length == 0) {
+           return Container(
+             child: Center(
+               child: Text(
+                 'You have no cars yet.',
+                 textAlign: TextAlign.center,
+                 style: TextStyle(fontSize: 18),
+               ),
+             ),
+           );
+         } else {
+           print(snapshot.data.docs.length);
+
+           return FutureBuilder(
+             future: FirebaseFirestore.instance
+                 .collection('UserNames')
+                 .doc(snapshot.data.docs[0].id).collection("OtherCars")
+                 .get(),
+             builder: (context, AsyncSnapshot<QuerySnapshot> q) {
+               if (q.data == null) {
+                 return Container(
+                   child: Center(
+                     child: CircularProgressIndicator(),
+                   ),
+                 );
+               } else if (q.data.docs.length == 0) {
+                 return Container(
+                   child: Center(
+                     child: Text(
+                       'You have no cars yet.',
+                       textAlign: TextAlign.center,
+                       style: TextStyle(fontSize: 18),
+                     ),
+                   ),
+                 );
+               } else {
+                 print(q.data.docs.length);
+
+                 /*  [     SingleChildScrollView(
+              child: Container (
+                child: Column (
+                  children: [
+
+                  ],
+                ),
+              ),
+            )*/
+
+                 return Container(
+                   alignment: Alignment.center,
+                   child: Column
+                     (
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     crossAxisAlignment: CrossAxisAlignment.center,
+                     children: <Widget>[
+                       Container(
+                         alignment: Alignment.center,
+                         margin: EdgeInsets.all(20),
+                         child: Text(
+                           "Other's Cars",
+                           style: TextStyle(fontSize: 30),
+                         ),
+                       ),
+                       Expanded(child: SizedBox(
+                         height: 60,
+                         child: ListView.separated(
+                             separatorBuilder: (context, index) => Divider(
+                               color: Colors.black,
+                             ),
+                             itemCount: q.data.docs.length,
+                             itemBuilder: (context, int i) {
+                               return Padding(
+                                 padding:
+                                 EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
+                                 child: Card(
+                                   elevation: 8.0,
+                                   margin: new EdgeInsets.symmetric(
+                                       horizontal: 10.0, vertical: 6.0),
+                                   child: Container(
+                                     height: 80,
+                                     decoration: BoxDecoration(
+                                         color: Color.fromRGBO(224, 224, 224, .9)),
+                                     child: ListTile(
+                                       leading: Container(
+                                         padding: EdgeInsets.only(right: 12.0),
+                                         decoration: new BoxDecoration(
+                                             border: new Border(
+                                                 right: new BorderSide(
+                                                     width: 1.0, color: Colors.black))),
+                                         child: Icon(
+                                           Icons.car_rental,
+                                           size: 35,
+                                         ),
+                                       ),
+                                       title: Text(
+                                         q.data.docs[i].get('CarOwnerName') +
+                                             "\n" +
+                                             q.data.docs[i].get('CarName'),
+                                         style: TextStyle(color: Colors.black),
+                                       ),
+                                       subtitle: Text(
+                                         q.data.docs[i].get('PlateNumber'),
+                                         style: TextStyle(color: Colors.black),
+                                       ),
+                                       trailing: Row(
+                                         mainAxisSize: MainAxisSize.min,
+                                         children: <Widget>[
+                                       new Container(
+
+                                         child: Transform.scale(scale: 1,
+                                           child: IconButton(
+                                             icon: Image.asset('images/ScanQR.png', )
+                                            ,
+                                            onPressed:() {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) => _contentWidget(FirebaseFirestore.instance.collection('UserNames')
+                                                      .doc(snapshot.data.docs[0].id).collection('OtherCars').doc(q.data.docs[i].id).id)
+                                              );
+                                            },
+                                           ),
+                                         ),
+                                       ),
+                                           new IconButton(
+                                             icon: Icon(
+                                               Icons.more_horiz_rounded,
+                                               color: Colors.black,
+                                               size: 40.0,
+                                             ),
+                                             onPressed: () {
+                                               showModalBottomSheet(
+                                                   context: context,
+                                                   builder: (BuildContext bc){
+                                                     return Container(
+                                                       child: new Wrap(
+                                                         children: <Widget>[
+                                                           new ListTile(
+                                                               leading: new Icon(Icons.delete),
+                                                               title: new Text('Delete'),
+                                                               tileColor: Colors.red,
+                                                               onTap: () => {
+                                                                 setState(() {
+
+                                                                   FirebaseFirestore.instance
+                                                                       .collection('UserNames')
+                                                                       .doc(snapshot.data.docs[0].id).collection('OtherCars').doc(q.data.docs[i].id)
+                                                                       .delete();
+                                                                   FirebaseFirestore.instance
+                                                                       .collection('Cars')
+                                                                       .doc(q.data.docs[i].get("PlateNumber")).collection('UsersList').doc(snapshot.data.docs[0].id)
+                                                                       .delete();
+                                                                   Navigator.pop(context);
+
+                                                                 })
+                                                               }
+                                                           ),
+                                                           new ListTile(
+                                                             leading: new Icon(Icons.cancel),
+                                                             title: new Text('Cancel'),
+                                                             onTap: () => {
+                                                               Navigator.pop(context)
+
+                                                             },
+                                                           ),
+                                                         ],
+                                                       ),
+                                                     );
+                                                   }
+                                               );
+
+                                             },
+                                           ),
+
+
+                                         ],
+                                       ),
+                                     ),
+                                   ),
+                                 ),
+                               );
+                             }),))
+
+                     ],
+                   ),);
+               }
+             },
+           );
+         }
+       },
+     ),
+       bottomNavigationBar: BottomNavigationBar(
+         backgroundColor: Color(0xfff7892b),
+         selectedItemColor: Colors.black,
+         currentIndex: indexXX,
+         onTap: (index) {
+           setState(() {
+             indexXX = index;
+             print(index);
+           });
+         },
+         items: [
+           BottomNavigationBarItem(
+             icon: new Icon(Icons.car_rental),
+             label: 'My Cars',
+
+           ),
+           BottomNavigationBarItem(
+             icon: Icon(Icons.car_repair),
+             label: 'Other cars',
+           )
+         ],
+       ),
+
+     );
+
   }
 }
