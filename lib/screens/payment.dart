@@ -85,8 +85,10 @@ class _MyHomePageState extends State<Payment> {
 
       showDialog(
           context: context,
+          barrierDismissible: false ,
           builder: (context) => AlertDialog(
             title: Text("Ticket paid"),
+
             content: Text("You have paid the ticket successfully" ),
             actions: [
               FlatButton(

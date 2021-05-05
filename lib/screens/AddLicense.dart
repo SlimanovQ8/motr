@@ -304,6 +304,7 @@ class _AddLicenseState extends State<AddLicense> {
                                           onPressed:
                                             chooseFrontFile
 
+
                                         ),),
                                       SizedBox(
                                         height: 4,
@@ -321,9 +322,11 @@ class _AddLicenseState extends State<AddLicense> {
                                             color: Color(0xfff7892b),
                                             child: const Text('Upload Picture'),
                                             onPressed: (){
+
                                               uploadFrontImage();
                                               setState(() {
                                                 isFrontChoosen =  false;
+
                                               });
                                             }
 
@@ -547,8 +550,7 @@ class _AddLicenseState extends State<AddLicense> {
                                               uploadBackImage();
                                               setState(() {
                                                 isBackChoosen =  false;
-                                                _BackImage = null;
-                                                clearBackSelection();
+
                                               });
                                             }
 
@@ -610,6 +612,10 @@ class _AddLicenseState extends State<AddLicense> {
   Future uploadBackImage() async {
     setState(() {
       isBackLoading = true;
+      FirebaseFirestore.instance.collection("Users").doc(auth.currentUser.uid).update({
+        "BackPic": "false",
+        "BackURL": '',
+      });
     });
     StorageReference storageReference = FirebaseStorage.instance
         .ref()
@@ -669,10 +675,15 @@ class _AddLicenseState extends State<AddLicense> {
   Future uploadFrontImage() async {
     setState(() {
       isFrontLoading = true;
+      FirebaseFirestore.instance.collection("Users").doc(auth.currentUser.uid).update({
+        "FrontPic": "false",
+        "FrontURL": '',
+      });
     });
     StorageReference storageReference = FirebaseStorage.instance
         .ref()
         .child('Users/${auth.currentUser.uid}/FrontImage');
+
     StorageUploadTask uploadTask = storageReference.putFile(_Frontimage);
     await uploadTask.onComplete;
     print('File Uploaded');
