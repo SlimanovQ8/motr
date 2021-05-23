@@ -163,7 +163,7 @@ class PoliceMain extends StatelessWidget {
 
 
 
-          itemCount: 2,
+          itemCount: 1,
           shrinkWrap: true,
           itemBuilder: (ctx, i) =>
               MainFeaturesForm(
@@ -173,9 +173,9 @@ class PoliceMain extends StatelessWidget {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
 
-            crossAxisSpacing: 25,
+            crossAxisSpacing: 8,
 
-            mainAxisSpacing: 12.5,
+            mainAxisSpacing: 4.5,
 
           ),)
         ,

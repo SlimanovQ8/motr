@@ -101,6 +101,14 @@ class _QRScanPageState extends State<AddUser> {
     final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
     return a.docs[0].get('email');
   }
+  Future<String> getRecieverUserID(String getReciverName) async {
+    final CollectionReference users = firestore.collection('Users');
+
+    final String uid = auth.currentUser.uid;
+
+    final a = await FirebaseFirestore.instance.collection('Users').where('UserName', isEqualTo: getReciverName).get();
+    return a.docs[0].id;
+  }
 
   Future<String> getReciverUserName(String getReciverName) async {
     final CollectionReference users = firestore.collection('Users');
@@ -155,6 +163,7 @@ class _QRScanPageState extends State<AddUser> {
       String CarName = await getSenderCarName();
       String PlateNumber = await getPlateNumber();
       String ReciverName = await getReciverName(DisNum);
+      String ReciverUserID = await getRecieverUserID(DisNum);
       String ReciverUserName = await getReciverUserName(DisNum);
       String UserN = await getSenderUserName();
       String email = await getRecieverEmail(DisNum);
@@ -195,7 +204,7 @@ class _QRScanPageState extends State<AddUser> {
           "SenderUserName": UserN,
           "CarName": CarName,
           "deviceID": getReciverDeviceID,
-          "geterNam*e": ReciverName,
+          "geterName": ReciverName,
          "UN": ReciverUserName,
           "Status": "Pending",
           "PlateNumber": PlateNumber,
@@ -228,12 +237,13 @@ class _QRScanPageState extends State<AddUser> {
          "SenderName": CarOwnerName,
          "SenderCar": CarName,
          "deviceID": getReciverDeviceID,
-         "geterName": ReciverUserName,
+         "geterName": ReciverName,
          "Status": "Pending",
          "DisabilityNumber": disNumber,
          "PlateNumber": PlateNumber,
          "RequestID": docid.id,
          "UserName": ReciverUserName,
+         "GeterUserID": ReciverUserID
 
 
        });

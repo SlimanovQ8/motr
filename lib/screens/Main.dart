@@ -6,6 +6,8 @@ import 'package:Motri/screens/EditProfile.dart';
 import 'package:Motri/screens/MyCars.dart';
 import 'package:Motri/screens/MySelfCodeFD.dart';
 import 'package:Motri/screens/MySelfCodeFH.dart';
+import 'package:Motri/screens/ViewTickets.dart';
+import 'package:Motri/screens/abd.dart';
 import 'package:Motri/screens/addCar.dart';
 import 'package:Motri/screens/loginPage.dart';
 import 'package:Motri/widgets/Auth/auth_form.dart';
@@ -299,12 +301,13 @@ class _StatefulWrapperState extends State<MainMotri>  {
           docid.update({
             "NotifyID": docid.id
           });
+         //String cx = await FirebaseFirestore.instance.collection('Cars').doc(PlateNumber);
           return showDialog(
               context: context,
               builder: (BuildContext context) =>
                   AlertDialog(
-                    title: Text(tag),
-                    content: Text(body),
+                    title: Text("Ticket receive"),
+                    content: Text("you have receive tickets"),
                     actions: [
                       FlatButton(
                         textColor: Color(0xFF6200EE),
@@ -313,11 +316,11 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             "Status": "Read"
                           });
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
+                            MaterialPageRoute(builder: (ctx) => ViewTickets()),
                           );
                         },
 
-                        child: Text('My Cars'),
+                        child: Text('My Ticket'),
                       ),
 
                       FlatButton(
@@ -408,6 +411,41 @@ class _StatefulWrapperState extends State<MainMotri>  {
                   )
           );
         }
+        else if (tag == 'Disabiltiy Ticket' || tag == 'Driver not registered' || tag == 'Expired car insurance') {
+          final now = new DateTime.now();
+
+          var docid = await FirebaseFirestore.instance.collection(
+              "Notifications").doc(UN).collection("UserNotifications").add({
+            "title": tag,
+            "body": body,
+            "Status": "Unread",
+            "time": now
+          });
+          docid.update({
+            "NotifyID": docid.id
+          });
+          showDialog(
+              context: context,
+              builder: (BuildContext context) =>
+                  AlertDialog(
+                    title: Text(tag),
+                    content: Text(body),
+                    actions: [
+
+                      FlatButton(
+                        textColor: Color(0xFF6200EE),
+                        onPressed: () {
+                          docid.update({
+                            "Status": "Read"
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Text('Ok'),
+                      ),
+                    ],
+                  )
+          );
+        }
         else if (tag == 'Add Request') {
           final now = new DateTime.now();
 
@@ -455,7 +493,7 @@ class _StatefulWrapperState extends State<MainMotri>  {
                               .collection('UserNames').doc(geterUN).collection("OtherCars").doc(PlateNumber).set({
                             "PlateNumber": PlateNumber,
                             "email": email,
-                            "authID": authID,
+                           "authID": authID,
                             "UN": geterUN,
                             "CarOwnerUserName": SenderUserName,
                             "CarOwnerName": SenderName,
@@ -1414,7 +1452,9 @@ class _StatefulWrapperState extends State<MainMotri>  {
                   leading: Icon(Icons.contact_support_rounded),
                   title: Text('About us'),
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => abd()),
+                    );
                   },
                 ),
 
@@ -1439,23 +1479,13 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             },
                           );
                         } else {
-                          return ListTile();
+                          return Container();
                         }
                       } else {
-                        return ListTile();
+                        return Container();
                       }
                     }),
-                ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Sign out'),
-                  onTap: () {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (ctx) => LoginPage()),
-                    );
-                  },
-                ),
+
 
                 FutureBuilder(
                     future: FirebaseFirestore.instance
@@ -1477,12 +1507,23 @@ class _StatefulWrapperState extends State<MainMotri>  {
                             },
                           );
                         } else {
-                          return ListTile();
+                          return Container();
                         }
                       } else {
-                        return ListTile();
+                        return Container();
                       }
                     }),
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Sign out'),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (ctx) => LoginPage()),
+                    );
+                  },
+                ),
 
 
               ],

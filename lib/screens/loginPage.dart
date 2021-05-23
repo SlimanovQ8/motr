@@ -41,6 +41,7 @@ class _LoginPageState extends State<LoginPage> {
       String password, BuildContext ctx) async {
     UserCredential authResult;
     try {
+      print(email);
       setState(() {
         isLoading = true;
         ValidEmail = false;
@@ -65,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
 
       final a = await FirebaseFirestore.instance.collection('MOI').get();
       int size = a.docs.length;
-      final firstTime = await FirebaseFirestore.instance.collection("MOI").where("email", isEqualTo: email.toLowerCase()).get();
+      final firstTime = await FirebaseFirestore.instance.collection("MOI").where("MOINumber", isEqualTo: email.toLowerCase()).get();
 
       if(email.endsWith("@policemotri.com"))
       {
@@ -305,7 +306,7 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                   validator: (f) {
                     if(!ValidEmail)
-                      return 'Invalid email address';
+                    return  !isCivPressed?  'Invalid MOI number' : 'Invalid email address';
                     return null;
                   },
                   keyboardType: isCivPressed ? TextInputType.emailAddress :  TextInputType.phone,
@@ -340,7 +341,7 @@ class _LoginPageState extends State<LoginPage> {
                   autovalidateMode: AutovalidateMode.always ,
                   validator: (f) {
                     if(ValidEmail)
-                      return 'Invalid email address or password';
+                      return !isCivPressed? 'Invalid MOI number or password' : 'Invalid email address or password';
                     return null;
                   },
                   onChanged: (String s) {
@@ -399,6 +400,7 @@ class _LoginPageState extends State<LoginPage> {
 
                           setState(() {
                             isCivPressed = true;
+                            ValidEmail = false;
                           });
 
                         },
@@ -418,6 +420,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           setState(() {
                             isCivPressed = false;
+                            ValidEmail = false;
 
                           });
 

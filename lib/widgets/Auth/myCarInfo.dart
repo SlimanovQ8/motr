@@ -754,7 +754,7 @@ class _myCars extends State<myCars> {
                                               showDialog(
                                                   context: context,
                                                   builder: (context) => _contentWidget(FirebaseFirestore.instance.collection('UserNames')
-                                                      .doc(snapshot.data.docs[0].id).collection('OtherCars').doc(q.data.docs[i].id).id)
+                                                      .doc(snapshot.data.docs[0].id).collection('OtherCars').doc(q.data.docs[i].id).id + "-" + auth.currentUser.uid)
                                               );
                                             },
                                            ),

@@ -149,7 +149,7 @@ class _myCars extends State<AllInfo> {
                           );
                         }
                         else {
-                          return _contentWidget(snapshot.data.docs[0].get('Plate Number'));
+                          return _contentWidget(snapshot.data.docs[0].get('Plate Number') + "-" + auth.currentUser.uid);
 
                         }
                       }),

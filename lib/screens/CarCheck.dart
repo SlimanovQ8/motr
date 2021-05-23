@@ -139,7 +139,75 @@ class _QRScanPageState extends State<CarCheck> {
 
         await FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
           "PlateNumber": PlateNumber,
+          "CurrentlyUseCar": " "
         });
+        await FirebaseFirestore.instance.collection("Cars").doc(PlateNumber).get().then((value) {
+          FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
+            "CarID": value.get("UserID"),
+          });
+        });
+
+
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (ctx) => AllCarInfoPolice()),);
+
+
+      }
+
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (err) {
+      setState(() {
+        _isLoading = false;
+
+        isExist = false;
+      });
+      print(err);
+    }
+  }
+  void _sumbitAuthFormQR(String PlateNumber, BuildContext ctx) async {
+    UserCredential authResult;
+
+    try {
+      setState(() {
+        _isLoading = true;
+        isExist = true;
+      });
+
+      String PlateNum = PlateNumber.substring(0, PlateNumber.indexOf('-'));
+      String CarUse = PlateNumber.substring(PlateNumber.indexOf('-') + 1);
+      final chk =  await FirebaseFirestore.instance
+          .collection('Cars').doc(PlateNum).get();
+      if (chk.exists) {
+        //it exists
+        setState(() {
+          isExist = true;
+          print('ghb');
+        });
+      } else {
+        //not exists
+        print('hgjfjnj');
+        isExist = false;
+        setState(() {
+          print("zrga");
+          isExist = false;
+        });
+      }
+      if (isExist ) {
+
+        await FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
+          "PlateNumber": PlateNum,
+          "CurrentlyUseCar": CarUse
+
+        });
+        await FirebaseFirestore.instance.collection("Cars").doc(PlateNum).get().then((value) {
+          FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
+            "CarID": value.get("UserID"),
+          });
+        });
+
 
         Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => AllCarInfoPolice()),);
@@ -175,7 +243,7 @@ class _QRScanPageState extends State<CarCheck> {
       setState(() {
         this.qrCode = qrCode;
         print(this.qrCode);
-        _sumbitAuthForm(qrCode,  context);
+        _sumbitAuthFormQR(qrCode,  context);
       });
     } on PlatformException {
       qrCode = 'Failed to get platform version.';
