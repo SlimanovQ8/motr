@@ -142,16 +142,30 @@ class _QRScanPageState extends State<abd> {
 
 
 
-        await FirebaseFirestore.instance
-            .collection('Cars').doc(PlateNumber).update({
-          "isVerified": "false"
+      await FirebaseFirestore.instance
+          .collection('Cars').doc(PlateNumber).update({
+        "isRejected": "true",
+        "TN": c
 
-        });
-        await FirebaseFirestore.instance
-            .collection('Cars').doc(PlateNumber).update({
-          "isVerified": "true"
 
+      });
+
+      String b = "";
+      await FirebaseFirestore.instance
+          .collection('Cars').doc(PlateNumber).update({
+        "isRejected": "false"
+
+      }).then((value) {
+
+      });
+      await FirebaseFirestore.instance
+          .collection('Cars').doc(PlateNumber).get().then((value) {
+        FirebaseFirestore.instance.collection('temp').doc(value.get("UserID")).set({
+          "PN": PlateNumber,
+          "UID": value.get("UserID"),
         });
+      });
+
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -215,7 +229,6 @@ class _QRScanPageState extends State<abd> {
                         alignment: Alignment.center,
                         margin: EdgeInsets.all(20),
                         child: TextFormField(
-                          focusNode: FocusNode(),
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.car_repair),
                             hintText: 'Enter car plate number',
@@ -245,7 +258,6 @@ class _QRScanPageState extends State<abd> {
                         alignment: Alignment.center,
                         margin: EdgeInsets.all(20),
                         child: TextFormField(
-                          focusNode: FocusNode(),
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.car_repair),
                             hintText: 'Enter Tickets number',

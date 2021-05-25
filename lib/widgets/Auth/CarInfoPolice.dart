@@ -147,6 +147,7 @@ class _myCars extends State<AllInfoPolice> {
       ),
     );
   }
+  int indexXX = 0;
   @override
   static const double _topSectionTopPadding = 50.0;
   static const double _topSectionBottomPadding = 20.0;
@@ -247,7 +248,7 @@ class _myCars extends State<AllInfoPolice> {
               child: new Text(
                 "Car info",
                 style: TextStyle(
-                    fontSize: 9
+                    fontSize: 14
                 ),
               ),
             ),
@@ -255,14 +256,14 @@ class _myCars extends State<AllInfoPolice> {
               child: new Text(
                 "Users list",
                 style: TextStyle(
-                    fontSize: 9
+                    fontSize: 14
                 ),
               ),
             ),
             new Tab(
               child: new Text(
                 "Disabilities", style: TextStyle(
-                fontSize: 9
+                fontSize: 14
               ),
               ),
 
@@ -271,7 +272,7 @@ class _myCars extends State<AllInfoPolice> {
               child: new Text(
                 "Tickets",
                 style: TextStyle(
-                    fontSize: 9
+                    fontSize: 14
                 ),
               ),
 
@@ -348,12 +349,316 @@ class _myCars extends State<AllInfoPolice> {
                               return  SingleChildScrollView(child: new Column(
                                 children: <Widget>[
 
+
                                   new ListTile(
                                     leading: const Icon(Icons.person),
                                     title: const Text('Car Owner Name'),
+                                    trailing:  Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  if (q.data.docs[0].get("isD") == 'true')
+                              Container(
+                                padding: EdgeInsets.only(right: 12.0),
+                                decoration: new BoxDecoration(
+                                    border: new Border(
+                                        right: new BorderSide(
+                                            width: 1.0, color: Colors.black))),
+                                child: Transform.scale(scale: 1.2,
+                                  child: IconButton(
+                                    icon: Image.asset('images/addDis.png', )
+                                    ,
+                                      onPressed: () {
+
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                AlertDialog(
+                                                  content: Text("The car owner is disability"),
+                                                  actions: [
+
+                                                    FlatButton(
+                                                      textColor: Color(0xFF6200EE),
+                                                      onPressed: () {
+
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Text('Ok'),
+                                                    ),
+                                                  ],
+                                                )
+                                        );
+
+
+                                      }
+                                  ),
+                                ),
+
+                              ),
+
+
+
+                                  new IconButton(
+                                    icon: Icon(
+                                      Icons.more_horiz_rounded,
+                                      color: Colors.black,
+                                      size: 40.0,
+                                    ),
+                                    onPressed: () {
+
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext bc){
+                                            return Container(
+                                              child: new Wrap(
+                                                children: <Widget>[
+                                                  new ListTile(
+                                                      leading: new Icon(Icons.image_aspect_ratio),
+                                                      title: new Text('Show License'),
+                                                      onTap: () => {
+                                                        showDialog(
+                                                          context: context,
+
+                                                          builder: (BuildContext context) =>
+                                                          new Dialog(
+
+                                                            child: Container(
+                                                              height: 500,
+                                                              width: 500,
+                                                              child: DefaultTabController(
+                                                                length: 2,
+                                                                child: Scaffold(
+                                                                  appBar: new TabBar(
+                                                                    labelColor: Colors.orange,
+                                                                    tabs: <Widget>[
+                                                                      new Tab(
+                                                                        text: "Front Picture",
+                                                                      ),
+                                                                      new Tab(
+                                                                        text: "Back Picture",
+                                                                      ),
+
+                                                                    ],
+                                                                  ),
+                                                                  body: new Container(
+
+                                                                    alignment: Alignment.center,
+                                                                    padding: const EdgeInsets.only(top: 10),
+                                                                    child: TabBarView(
+                                                                      children: <Widget> [
+                                                                        new Container(
+                                                                          child: new Center(
+                                                                            child: new FutureBuilder(
+                                                                                future: FirebaseFirestore.instance
+                                                                                    .collection('Users')
+                                                                                    .where('Civil ID', isEqualTo: snapshot.data.docs[0].get("Car Owner Civil ID"))
+                                                                                    .where('FrontPic', isEqualTo: true.toString())
+                                                                                    .get(),
+                                                                                builder:
+                                                                                    (context, AsyncSnapshot<QuerySnapshot> qa) {
+                                                                                  if (qa.data == null) {
+                                                                                    return Container(
+                                                                                      child: Center(
+                                                                                        child: CircularProgressIndicator(),
+                                                                                      ),
+                                                                                    );
+                                                                                  }
+                                                                                  else if (qa.data.docs.length == 0){
+
+
+                                                                                    return new Text("No Front Picture");
+                                                                                  }
+                                                                                  else
+                                                                                  {
+                                                                                    return new Center(
+                                                                                      child: Material(
+                                                                                        child: InkWell(
+                                                                                          onTap: () {
+                                                                                            print('ergdhb ');
+
+
+
+                                                                                            showDialog(
+                                                                                              context: context,
+                                                                                              builder: (context) => _contentWidget(qa.data.docs[0].get("FrontURL"), 2),
+                                                                                            );
+
+
+                                                                                          },
+                                                                                          child: Container(
+                                                                                            child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(20.0),
+                                                                                              child: Image.network(
+                                                                                                qa.data.docs[0].get("FrontURL") ,
+                                                                                                height: 300,
+                                                                                              ),),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    );
+
+                                                                                  }
+                                                                                }),
+                                                                          ),
+                                                                        ),
+
+                                                                        new Container(
+                                                                          child: new Center(
+                                                                            child: new FutureBuilder(
+                                                                                future: FirebaseFirestore.instance
+                                                                                    .collection('Users')
+                                                                                    .where('Civil ID', isEqualTo: snapshot.data.docs[0].get("Car Owner Civil ID"))
+                                                                                    .where('BackPic', isEqualTo: true.toString())
+                                                                                    .get(),
+                                                                                builder:
+                                                                                    (context, AsyncSnapshot<QuerySnapshot> qa) {
+                                                                                  if (qa.data == null) {
+                                                                                    return Container(
+                                                                                      child: Center(
+                                                                                        child: CircularProgressIndicator(),
+                                                                                      ),
+                                                                                    );
+                                                                                  }
+                                                                                  else if (qa.data.docs.length == 0){
+
+
+                                                                                    return new Text("No Back picture");
+
+                                                                                  }
+                                                                                  else
+                                                                                  {
+                                                                                    return new Center(
+
+
+                                                                                      child: Material(
+                                                                                        child: InkWell(
+                                                                                          onTap: () {
+                                                                                            print('ergdhb ');
+
+
+                                                                                            showDialog(
+                                                                                              context: context,
+                                                                                              builder: (context) => _contentWidget(qa.data.docs[0].get("BackURL"), 2),
+                                                                                            );
+
+
+
+                                                                                          },
+                                                                                          child: Container(
+                                                                                            child: ClipRRect(
+                                                                                              borderRadius: BorderRadius.circular(20.0),
+                                                                                              child: Image.network(
+                                                                                                qa.data.docs[0].get("BackURL") ,
+                                                                                                height: 300,
+                                                                                              ),),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    );
+
+
+                                                                                  }
+                                                                                }),
+                                                                          ),
+                                                                        ),
+
+
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+
+
+                                                                /*Center(
+        child: */
+                                                              ),
+                                                            ),
+
+                                                          ),
+                                                        )
+                                                      }
+                                                  ),
+
+                                                  new ListTile(
+                                                    leading: new Icon(Icons.info_outline_rounded),
+                                                    title: new Text("Personal Info"),
+                                                    onTap: () => {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) =>
+                                                              AlertDialog(
+                                                                title: Text("Personal Info"),
+                                                                content: FutureBuilder(future: FirebaseFirestore.instance.collection('Users')
+                                                                    .where('Civil ID', isEqualTo: snapshot.data.docs[0].get("Car Owner Civil ID"))
+                                                                    .get(),
+                                                                    builder: (context, AsyncSnapshot<QuerySnapshot> qs)
+                                                                    {
+                                                                      if (qs.data == null) {
+                                                                        return Container(
+                                                                          height: 40,
+                                                                          width: 40,
+                                                                          child: Center(
+                                                                            child: CircularProgressIndicator(),
+                                                                          ),
+                                                                        );
+                                                                      } else if (qs.data.docs.length == 0) {
+                                                                        return Container(
+                                                                          child: Center(
+                                                                            child: Text(
+                                                                              'No users uses this car.',
+                                                                              textAlign: TextAlign.center,
+                                                                              style: TextStyle(fontSize: 18),
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                      }
+                                                                      else
+                                                                      {
+
+                                                                        return Text ("Name: " + qs.data.docs[0].get("Name") + "\n \n"
+                                                                            "Civil ID: " + qs.data.docs[0].get("Civil ID") + "\n \n"
+                                                                            "Username: " + qs.data.docs[0].get("UserName") + "\n \n"
+                                                                        );
+                                                                      }
+                                                                    }
+
+                                                                ),
+
+
+
+
+                                                                actions: [
+
+
+                                                                  FlatButton(
+                                                                    textColor: Color(0xFF6200EE),
+                                                                    onPressed: () {
+
+                                                                      Navigator.pop(context);
+                                                                    },
+                                                                    child: Text('Ok'),
+                                                                  ),
+                                                                ],
+                                                              )
+                                                      ),
+                                                      Navigator.pop(context)
+
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }
+                                      );
+
+
+                                    },
+                                  ),
+                                ],
+                              ),
                                     subtitle:  q.data.docs[0].get('CurrentlyUseCar') == snapshot.data.docs[0].get("UserID") ?
                                   Text(snapshot.data.docs[0].get('Car Owner Name') + "\n(Currently uses the car)")
                                     : Text(snapshot.data.docs[0].get('Car Owner Name')),
+
                                   ),
                                   const Divider(
                                     color: Colors.black,
@@ -449,7 +754,7 @@ class _myCars extends State<AllInfoPolice> {
                                               }),
 
 
-                                          
+
                                         ],
                                       ),
                                       title: const Text('Car insurance expire date'),
@@ -770,9 +1075,9 @@ class _myCars extends State<AllInfoPolice> {
                                                                                     else
                                                                                     {
 
-                                                                                      return Text ("Name: " + qs.data.docs[i].get("Name") + "\n \n"
-                                                                                          "Civil ID: " + qs.data.docs[i].get("Civil ID") + "\n \n"
-                                                                                          "Username: " + qs.data.docs[i].get("UserName") + "\n \n"
+                                                                                      return Text ("Name: " + qs.data.docs[0].get("Name") + "\n \n"
+                                                                                          "Civil ID: " + qs.data.docs[0].get("Civil ID") + "\n \n"
+                                                                                          "Username: " + qs.data.docs[0].get("UserName") + "\n \n"
                                                                                       );
                                                                                     }
                                                                                   }
@@ -839,8 +1144,10 @@ class _myCars extends State<AllInfoPolice> {
                       }),
                 ),
               ),
-              new Container(
-                child: new Center(
+              new Scaffold(
+                body: indexXX == 0 ?
+
+                new Container(
                   child: new FutureBuilder(
                       future: FirebaseFirestore.instance
                           .collection('MOI')
@@ -858,7 +1165,7 @@ class _myCars extends State<AllInfoPolice> {
                           return Container(
                             child: Center(
                               child: Text(
-                                'You have no Disabilities users uses this car.',
+                                'You have no Zrga users uses this car.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 18),
                               ),
@@ -920,42 +1227,42 @@ class _myCars extends State<AllInfoPolice> {
                                                             AlertDialog(
                                                               title: Text("Disability Info"),
                                                               content: FutureBuilder(future: FirebaseFirestore.instance.collection('Disabilities')
-                                                                    .where("DisabilityNumber", isEqualTo: ss.data.docs[i].get("DisabilityNumber")).get(),
-                                                                    builder: (context, AsyncSnapshot<QuerySnapshot> qs)
-                                                                    {
-                                                                      if (qs.data == null) {
-                                                                        return Container(
-                                                                          height: 40,
-                                                                          width: 40,
-                                                                          child: Center(
-                                                                            child: CircularProgressIndicator(),
+                                                                  .where("DisabilityNumber", isEqualTo: ss.data.docs[i].get("DisabilityNumber")).get(),
+                                                                  builder: (context, AsyncSnapshot<QuerySnapshot> qs)
+                                                                  {
+                                                                    if (qs.data == null) {
+                                                                      return Container(
+                                                                        height: 40,
+                                                                        width: 40,
+                                                                        child: Center(
+                                                                          child: CircularProgressIndicator(),
+                                                                        ),
+                                                                      );
+                                                                    } else if (qs.data.docs.length == 0) {
+                                                                      return Container(
+                                                                        child: Center(
+                                                                          child: Text(
+                                                                            'No disabilities users uses this car.',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(fontSize: 18),
                                                                           ),
-                                                                        );
-                                                                      } else if (qs.data.docs.length == 0) {
-                                                                        return Container(
-                                                                          child: Center(
-                                                                            child: Text(
-                                                                              'No disabilities users uses this car.',
-                                                                              textAlign: TextAlign.center,
-                                                                              style: TextStyle(fontSize: 18),
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      }
-                                                                      else
-                                                                      {
-
-                                                                        return Text ("Name: " + qs.data.docs[i].get("DisabilityName") + "\n \n"
-                                                                            "Civil ID: " + qs.data.docs[i].get("DisabilityCivilID") + "\n \n"
-                                                                            "Blue Sign Number: " + qs.data.docs[i].get("BlueSignNum") + "\n \n"
-                                                                            "Disability Number: " + qs.data.docs[i].get("DisabilityNumber") + "\n \n"
-                                                                            "Disability Type: " + qs.data.docs[i].get("DisabilityType") + "\n \n"
-
-                                                                        );
-                                                                      }
+                                                                        ),
+                                                                      );
                                                                     }
+                                                                    else
+                                                                    {
 
-                                                                ),
+                                                                      return Text ("Name: " + qs.data.docs[0].get("DisabilityName") + "\n \n"
+                                                                          "Civil ID: " + qs.data.docs[0].get("DisabilityCivilID") + "\n \n"
+                                                                          "Blue Sign Number: " + qs.data.docs[0].get("BlueSignNum") + "\n \n"
+                                                                          "Disability Number: " + qs.data.docs[0].get("DisabilityNumber") + "\n \n"
+                                                                          "Disability Type: " + qs.data.docs[0].get("DisabilityType") + "\n \n"
+
+                                                                      );
+                                                                    }
+                                                                  }
+
+                                                              ),
 
 
 
@@ -996,12 +1303,12 @@ class _myCars extends State<AllInfoPolice> {
                                                             );
                                                           }
                                                           else
-                                                            {
+                                                          {
 
-                                                            }
-                                                    }
+                                                          }
+                                                        }
 
-                                                        );
+                                                    );
 
                                                   },
                                                 ),
@@ -1031,7 +1338,221 @@ class _myCars extends State<AllInfoPolice> {
 
                         }
                       }),
+                ) :
+
+                  FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection('MOI')
+                          .where('UserID', isEqualTo: auth.currentUser.uid)
+                          .get(),
+                      builder:
+                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.data == null) {
+                          return Container(
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        } else if (snapshot.data.docs.length == 0) {
+                          return Container(
+                            child: Center(
+                              child: Text(
+                                'You have no Disabilities users uses this car.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return FutureBuilder( future: FirebaseFirestore.instance.collection('DisabilitiesChild')
+                              .where("isDisability", isEqualTo: "true").where("UserID", isEqualTo: snapshot.data.docs[0].get("CarID")).get(),
+                              builder: (context, AsyncSnapshot<QuerySnapshot> ss)
+                              {
+                                if (ss.data == null) {
+                                  return Container(
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                } else if (ss.data.docs.length == 0) {
+                                  return Container(
+                                    child: Center(
+                                      child: Text(
+                                        'No disabilities users uses this car.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                else {
+                                  return  ListView.separated(
+                                      separatorBuilder: (context, index) => Divider(
+                                        color: Colors.black,
+                                      ),
+                                      itemCount: ss.data.docs.length,
+                                      itemBuilder: (context, int i) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 0.0, horizontal: 20.0),
+                                          child: Card(
+                                            elevation: 8.0,
+                                            margin: new EdgeInsets.symmetric(
+                                                horizontal: 10.0, vertical: 6.0),
+                                            child: Container(
+                                              height: 70,
+                                              decoration: BoxDecoration(
+                                                  color: Color.fromRGBO(
+                                                      224, 224, 224, .9)),
+                                              child: ListTile(
+                                                trailing: new IconButton(
+                                                  icon: Icon(
+                                                    Icons.more_horiz_rounded,
+                                                    color: Colors.black,
+                                                    size: 40.0,
+                                                  ),
+                                                  onPressed: () {
+
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) =>
+                                                            AlertDialog(
+                                                              title: Text("Disability Info"),
+                                                              content: FutureBuilder(future: FirebaseFirestore.instance.collection('DisabilitiesChild')
+                                                                  .where("DisabilityNumber", isEqualTo: ss.data.docs[i].get("DisabilityNumber")).get(),
+                                                                  builder: (context, AsyncSnapshot<QuerySnapshot> qs)
+                                                                  {
+                                                                    if (qs.data == null) {
+                                                                      return Container(
+                                                                        height: 40,
+                                                                        width: 40,
+                                                                        child: Center(
+                                                                          child: CircularProgressIndicator(),
+                                                                        ),
+                                                                      );
+                                                                    } else if (qs.data.docs.length == 0) {
+                                                                      return Container(
+                                                                        child: Center(
+                                                                          child: Text(
+                                                                            'No disabilities users uses this car.',
+                                                                            textAlign: TextAlign.center,
+                                                                            style: TextStyle(fontSize: 18),
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                      return Text ("Name: " + qs.data.docs[0].get("ChildName") + "\n \n"
+                                                                          "Civil ID: " + qs.data.docs[0].get("ChildCivilID") + "\n \n"
+                                                                          "Blue Sign Number: " + qs.data.docs[0].get("BlueSignNum") + "\n \n"
+                                                                          "Disability Number: " + qs.data.docs[0].get("DisabilityNumber") + "\n \n"
+                                                                          "Disability Type: " + qs.data.docs[0].get("DisabilityType") + "\n \n"
+
+                                                                      );
+                                                                    }
+                                                                  }
+                                                                  ),
+
+
+
+
+                                                              actions: [
+
+
+                                                                FlatButton(
+                                                                  textColor: Color(0xFF6200EE),
+                                                                  onPressed: () {
+
+                                                                    Navigator.pop(context);
+                                                                  },
+                                                                  child: Text('Ok'),
+                                                                ),
+                                                              ],
+                                                            )
+                                                    );
+                                                    new FutureBuilder(future: FirebaseFirestore.instance.collection('DisabilitiesChild')
+                                                        .where("DisabilityNumber", isEqualTo: ss.data.docs[i].get("DisabilityNumber")).get(),
+                                                        builder: (context, AsyncSnapshot<QuerySnapshot> qs)
+                                                        {
+                                                          if (qs.data == null) {
+                                                            return Container(
+                                                              child: Center(
+                                                                child: CircularProgressIndicator(),
+                                                              ),
+                                                            );
+                                                          } else if (qs.data.docs.length == 0) {
+                                                            return Container(
+                                                              child: Center(
+                                                                child: Text(
+                                                                  'No disabilities users uses this car.',
+                                                                  textAlign: TextAlign.center,
+                                                                  style: TextStyle(fontSize: 18),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }
+                                                          else
+                                                          {
+
+                                                          }
+                                                        }
+
+                                                    );
+
+                                                  },
+                                                ),
+                                                leading: Container(
+                                                  padding: EdgeInsets.only(right: 12.0),
+                                                  decoration: new BoxDecoration(
+                                                      border: new Border(
+                                                          right: new BorderSide(
+                                                              width: 1.0,
+                                                              color: Colors.black))),
+                                                  child: Icon(
+                                                    Icons.wheelchair_pickup,
+                                                    size: 35,
+                                                  ),
+                                                ),
+                                                title: Text(
+                                                    ss.data.docs[i].get("ChildName")
+                                                ),
+                                                subtitle: Text("Dis Number: " + ss.data.docs[i].get('DisabilityNumber')),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                }
+                              }) ;
+
+                        }
+                      }),
+
+                bottomNavigationBar: BottomNavigationBar(
+                  backgroundColor: Color(0xfff7892b),
+                  selectedItemColor: Colors.black,
+                  currentIndex: indexXX,
+                  onTap: (index) {
+                    setState(() {
+                      indexXX = index;
+                      print(index);
+                    });
+                  },
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: new Icon(Icons.wheelchair_pickup),
+                      label: 'Dependents',
+
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.car_repair),
+                      label: 'Non-dependent ',
+                    )
+                  ],
                 ),
+
               ),
 
               new Container(
@@ -1194,6 +1715,33 @@ class _myCars extends State<AllInfoPolice> {
                                                                           c++;
                                                                           _sumbitAuthForm(ticketsList[i].TicketTitle, ticketsList[i].TicketInfo, ticketsList[i].Price.toString(), context);
                                                                         }
+                                                                      }
+                                                                      if (c > 0)
+                                                                      {
+
+                                                                        FirebaseFirestore.instance
+                                                                            .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).update({
+                                                                          "isRejected": "true",
+                                                                          "TN": c.toString()
+
+
+                                                                        });
+
+                                                                        String b = "";
+                                                                        FirebaseFirestore.instance
+                                                                            .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).update({
+                                                                          "isRejected": "false"
+
+                                                                        }).then((value) {
+
+                                                                        });
+                                                                        FirebaseFirestore.instance
+                                                                            .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).get().then((value) {
+                                                                          FirebaseFirestore.instance.collection('temp').doc(value.get("UserID")).set({
+                                                                            "PN": snapshot.data.docs[0].get("PlateNumber"),
+                                                                            "UID": value.get("UserID"),
+                                                                          });
+                                                                        });
                                                                       }
 
                                                                       c > 0 ?
@@ -1475,6 +2023,34 @@ class _myCars extends State<AllInfoPolice> {
                                                                     _sumbitAuthForm(ticketsList[i].TicketTitle, ticketsList[i].TicketInfo, ticketsList[i].Price.toString(), context);
                                                                   }
 
+
+                                                               }
+                                                                if (c > 0)
+                                                                  {
+
+                                                                  FirebaseFirestore.instance
+                                                                      .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).update({
+                                                                    "isRejected": "true",
+                                                                    "TN": c.toString()
+
+
+                                                                  });
+
+                                                                String b = "";
+                                                                FirebaseFirestore.instance
+                                                                    .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).update({
+                                                                  "isRejected": "false"
+
+                                                                }).then((value) {
+
+                                                                });
+                                                                 FirebaseFirestore.instance
+                                                                    .collection('Cars').doc(snapshot.data.docs[0].get("PlateNumber")).get().then((value) {
+                                                                  FirebaseFirestore.instance.collection('temp').doc(value.get("UserID")).set({
+                                                                    "PN": snapshot.data.docs[0].get("PlateNumber"),
+                                                                    "UID": value.get("UserID"),
+                                                                  });
+                                                                });
                                                                 }
                                                                 c > 0 ?
                                                                 showDialog(

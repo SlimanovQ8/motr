@@ -138,6 +138,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
+  String PoliceEmail = "";
   Widget _submitButton() {
 
     if (isLoading)
@@ -148,8 +149,8 @@ class _LoginPageState extends State<LoginPage> {
         if (isCivPressed)
           _sumbitAuthForm(UserEmail, UserPass, context);
         else {
-          UserEmail = "m" + UserEmail + "@policemotri.com";
-          _sumbitAuthForm(UserEmail, UserPass, context);
+          PoliceEmail = "m" + UserEmail + "@policemotri.com";
+          _sumbitAuthForm(PoliceEmail, UserPass, context);
         }
       }
       

@@ -74,7 +74,7 @@ class _MyHomePageState extends State<ChangeMyPasspolice> {
           isEqual = false;
         });
       }
-      if (NewPassword.length > 6) {
+      if (NewPassword.length > 7) {
         //it exists
         setState(() {
           isLessThan7New = true;
@@ -180,7 +180,7 @@ class _MyHomePageState extends State<ChangeMyPasspolice> {
                     ),
                     validator: (b) {
                       if (!isLessThan7New) {
-                        return 'Password should be at least 6 characters';
+                        return 'Password should be at least 8 characters';
                       }
                       return null;
                     },

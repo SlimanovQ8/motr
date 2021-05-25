@@ -145,6 +145,16 @@ class _QRScanPageState extends State<CarCheck> {
           FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
             "CarID": value.get("UserID"),
           });
+          FirebaseFirestore.instance.collection('Users').doc(value.get("UserID")).get().then((v) {
+            FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
+              "isD": v.get("isDisability"),
+              "FrontPic": v.get("FrontPic"),
+              "BackPic": v.get("BackPic"),
+              "FrontURL": v.get("FrontURL"),
+              "BackURL": v.get("BackURL"),
+
+            });
+          });
         });
 
 
@@ -205,6 +215,16 @@ class _QRScanPageState extends State<CarCheck> {
         await FirebaseFirestore.instance.collection("Cars").doc(PlateNum).get().then((value) {
           FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
             "CarID": value.get("UserID"),
+          });
+          FirebaseFirestore.instance.collection('Users').doc(value.get("UserID")).get().then((v) {
+            FirebaseFirestore.instance.collection("MOI").doc(auth.currentUser.uid).update({
+              "isD": v.get("isDisability"),
+              "FrontPic": v.get("FrontPic"),
+              "BackPic": v.get("BackPic"),
+              "FrontURL": v.get("FrontURL"),
+              "BackURL": v.get("BackURL"),
+
+            });
           });
         });
 

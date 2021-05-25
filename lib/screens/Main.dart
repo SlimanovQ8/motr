@@ -239,6 +239,19 @@ class _StatefulWrapperState extends State<MainMotri>  {
       })
       });
 
+      FirebaseFirestore.instance
+          .collection('Disabilities')
+          .where('UserID', isEqualTo: auth.currentUser.uid)
+          .where('isDisability', isEqualTo: 'true')
+          .get().then((value) {
+            if (value.size > 0)
+              {
+                FirebaseFirestore.instance
+                    .collection('Users').doc(auth.currentUser.uid).update({
+                  "isDisability": "true",
+                });
+              }
+      });
 
       FirebaseAuth.instance.currentUser.getIdToken().then((value) =>
       {
@@ -290,52 +303,131 @@ class _StatefulWrapperState extends State<MainMotri>  {
           print(tag);
           final now = new DateTime.now();
 
-          var docid = await FirebaseFirestore.instance.collection(
-              "Notifications").doc(UN).collection("UserNotifications").add({
-            "title": tag,
-            "body": body,
-            "Status": "Unread",
-            "time": now
 
+          String x = "";
+        final isEx = await FirebaseFirestore.instance.collection("temp").where("UID", isEqualTo: auth.currentUser.uid).get();
+        if (isEx.size> 0)
+          {
+            setState(() {
+              x = isEx.docs[0].get("PN");
+
+            });
+            x = isEx.docs[0].get("PN");
+          }
+        String cb = "";
+        if (x != "")
+        await FirebaseFirestore.instance.collection("Cars").doc(x).get().then((value) {
+          setState(() {
+            cb = value.get("TN");
           });
-          docid.update({
-            "NotifyID": docid.id
-          });
-         //String cx = await FirebaseFirestore.instance.collection('Cars').doc(PlateNumber);
-          return showDialog(
-              context: context,
-              builder: (BuildContext context) =>
-                  AlertDialog(
-                    title: Text("Ticket receive"),
-                    content: Text("you have receive tickets"),
-                    actions: [
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (ctx) => ViewTickets()),
-                          );
-                        },
+          cb = value.get("TN");
 
-                        child: Text('My Ticket'),
-                      ),
+        });
+          if (cb != '0' && cb.length > 0) {
+            var docid = await FirebaseFirestore.instance.collection(
+                "Notifications").doc(UN).collection("UserNotifications").add({
+              "title": cb != "1" ? "Tickets receive" : "Ticket receive",
+              "body": cb != "1" ? "you have receive " + cb + " tickets" : "you have receive " + cb + " ticket",
+              "Status": "Unread",
+              "time": now
 
-                      FlatButton(
-                        textColor: Color(0xFF6200EE),
-                        onPressed: () {
-                          docid.update({
-                            "Status": "Read"
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text('Ok'),
-                      ),
-                    ],
-                  )
-          );
+            });
+            docid.update({
+              "NotifyID": docid.id
+            });
+            if (x != '' && x.length > 0) {
+              await FirebaseFirestore.instance
+                  .collection('Cars').doc(x).update({
+                "TN": '0',
+
+
+              });
+            }
+            return showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    AlertDialog(
+                      title: cb != "1"? Text("Tickets receive") : Text("Ticket receive"),
+                      content: cb != "1" ? Text(
+                          "you have receive " + cb + " tickets") : Text(
+                          "you have receive " + cb + " ticket"),
+                      actions: [
+                        FlatButton(
+                          textColor: Color(0xFF6200EE),
+                          onPressed: () {
+                            docid.update({
+                              "Status": "Read"
+                            });
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (ctx) =>
+                                  ViewTickets()),
+                            );
+                          },
+
+                          child: Text('My Ticket'),
+                        ),
+
+                        FlatButton(
+                          textColor: Color(0xFF6200EE),
+                          onPressed: () {
+                            docid.update({
+                              "Status": "Read"
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Text('Ok'),
+                        ),
+                      ],
+                    )
+            );
+          }
+          else {
+            var docid = await FirebaseFirestore.instance.collection(
+                "Notifications").doc(UN).collection("UserNotifications").add({
+              "title": tag,
+              "body": body,
+              "Status": "Unread",
+              "time": now
+
+            });
+            docid.update({
+              "NotifyID": docid.id
+            });
+            return showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    AlertDialog(
+                      title: Text(tag),
+                      content: Text(body),
+                      actions: [
+                        FlatButton(
+                          textColor: Color(0xFF6200EE),
+                          onPressed: () {
+                            docid.update({
+                              "Status": "Read"
+                            });
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (ctx) => MyCarsInfo()),
+                            );
+                          },
+
+                          child: Text('My Cars'),
+                        ),
+
+                        FlatButton(
+                          textColor: Color(0xFF6200EE),
+                          onPressed: () {
+                            docid.update({
+                              "Status": "Read"
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Text('Ok'),
+                        ),
+                      ],
+                    )
+            );
+          }
         }
         else
         if (tag == ' Self Request Accepted' || tag == 'Self Request Rejected' ||
